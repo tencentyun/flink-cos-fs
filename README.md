@@ -2,18 +2,6 @@
 
 Flink-cos-fs 是腾讯云对象存储系统COS针对Flink的文件系统实现，并且支持了recoverwriter接口。 Flink可以基于该文件系统实现读写COS上的数据以及作为流应用的状态后端。
 
-## 更新说明
-
-### Flink-cos-fs v1.10-1.0
-
-MD5: 2c89ecb1c45efdc53c40ead62ee23aad 
-
-2020-08-31
-
-- 实现Flink-1.10的抽象文件系统接口，支持Flink直接读写COS
-- 支持Flink的recoverWriter接口，支持streamingFileSink
-
-
 ## 使用方法
 
 1.下载对应Flink版本的预编译包，目前只提供Flink 1.10的预编译包；

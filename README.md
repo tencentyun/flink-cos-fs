@@ -17,8 +17,11 @@ MD5: 2c89ecb1c45efdc53c40ead62ee23aad
 ## 使用方法
 
 1.下载对应Flink版本的预编译包，目前只提供Flink 1.10的预编译包；
+
 2.执行`mkdir ${FLINK_HOME}/plugins/cos-fs-hadoop`，在`${FLINK_HOME}/plugins`目录下创建flink-cos-fs-hadoop插件目录；
+
 3.将对应版本的预编译包拷贝到`${FLINK_HOME}/plugins/cos-fs-hadoop`目录下；
+
 4.在${FLINK_HOME}/conf/flink-conf.yaml中添加一些COSN相关配置以确保flink能够访问到COS存储桶，这里的配置键与COSN完全兼容，可参考[hadoop-cos:[对象存储 Hadoop 工具 - 工具指南 - 文档中心 - 腾讯云](https://cloud.tencent.com/document/product/436/6884)](https://cloud.tencent.com/document/product/436/6884)，必须配置信息如下：
 
 ```yaml

@@ -64,7 +64,6 @@ stream.writeAsText("cosn://<bucket-appid>/<object-name>");
 env.setStateBackend(new FsStateBackend("cosn://<bucket-appid>/<object-name>"));
 
 // Use the streamingFileSink which supports the recoverable writer
-
 StreamingFileSink<String> fileSink  =  StreamingFileSink.forRowFormat(
                 new Path("cosn://<bucket-appid>/<object-name>"),new SimpleStringEncoder<String>("UTF-8"))
                 .withRollingPolicy(build).build();

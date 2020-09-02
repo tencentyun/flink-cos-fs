@@ -100,3 +100,7 @@ StreamingFileSink<String> fileSink  =  StreamingFileSink.forRowFormat(
 
 
 ## FAQ
+
+- Flink 既可以通过[hadoop-cos](https://github.com/tencentyun/hadoop-cos)读写COS中的对象文件，也可以通过flink-cos-fs来读写，这两种有什么区别？
+
+hadoop-cos实现了Hadoop的兼容文件系统语义，Flink可以通过写Hadoop兼容文件系统的形式写入数据到COS中，但是这种方式不支持的flink的recoverable writer写入，当你使用streamingFileSink写入数据时，要求底层文件系统支持recoverable writer。 因此，Flink-cos-fs基于hadoop-cos扩展实现了flink的recoverable writer，完整地支持了Flink文件系统的语义，因此推荐使用它来访问COS对象。

@@ -2,15 +2,31 @@
 
 Flink-cos-fs 是腾讯云对象存储系统COS针对Flink的文件系统实现，并且支持了recoverwriter接口。 Flink可以基于该文件系统实现读写COS上的数据以及作为流应用的状态后端。
 
+## 使用环境
+
+### 系统环境
+
+支持Linux和Mac OS系统
+
+### 软件依赖
+
+Flink 1.10
+
+
 ## 使用方法
 
-1.下载对应Flink版本的预编译包，目前只提供Flink 1.10的预编译包；
+### 获取Flink-cos-fs 发行包
 
-2.执行`mkdir ${FLINK_HOME}/plugins/cos-fs-hadoop`，在`${FLINK_HOME}/plugins`目录下创建flink-cos-fs-hadoop插件目录；
+下载地址：[Flink-cos-fs release](https://github.com/yuyang733/flink-cos-fs/releases)
 
-3.将对应版本的预编译包拷贝到`${FLINK_HOME}/plugins/cos-fs-hadoop`目录下；
 
-4.在${FLINK_HOME}/conf/flink-conf.yaml中添加一些COSN相关配置以确保flink能够访问到COS存储桶，这里的配置键与COSN完全兼容，可参考[hadoop-cos:[对象存储 Hadoop 工具 - 工具指南 - 文档中心 - 腾讯云](https://cloud.tencent.com/document/product/436/6884)](https://cloud.tencent.com/document/product/436/6884)，必须配置信息如下：
+### 安装Flink-cos-fs依赖
+
+1.执行`mkdir ${FLINK_HOME}/plugins/cos-fs-hadoop`，在`${FLINK_HOME}/plugins`目录下创建flink-cos-fs-hadoop插件目录；
+
+2.将对应版本的预编译包（flink-cos-fs-{flink.version}-{version}.jar）拷贝到`${FLINK_HOME}/plugins/cos-fs-hadoop`目录下；
+
+3.在${FLINK_HOME}/conf/flink-conf.yaml中添加一些COSN相关配置以确保flink能够访问到COS存储桶，这里的配置键与COSN完全兼容，可参考[hadoop-cos:[对象存储 Hadoop 工具 - 工具指南 - 文档中心 - 腾讯云](https://cloud.tencent.com/document/product/436/6884)](https://cloud.tencent.com/document/product/436/6884)，必须配置信息如下：
 
 ```yaml
 fs.cosn.impl: org.apache.hadoop.fs.CosFileSystem
@@ -22,7 +38,7 @@ fs.cosn.bucket.endpoint_suffix: cos.ap-guangzhou.myqcloud.com
 
 ```
 
-5.在作业的write或sink路径中填写格式为：```cosn://bucket-appid/path```的路径信息即可，例如：
+4.在作业的write或sink路径中填写格式为：```cosn://bucket-appid/path```的路径信息即可，例如：
 
 ```java
         ...
@@ -32,6 +48,29 @@ fs.cosn.bucket.endpoint_suffix: cos.ap-guangzhou.myqcloud.com
                 .build();
         ...
 ```
+
+### 使用示例
+
+以下给出Flink Job读写COS的示例代码：
+
+```Java
+// Read from COS bucket
+env.readTextFile("cosn://<bucket-appid>/<object-name>");
+
+// Write to COS bucket
+stream.writeAsText("cosn://<bucket-appid>/<object-name>");
+
+// Use COS as FsStatebackend
+env.setStateBackend(new FsStateBackend("cosn://<bucket-appid>/<object-name>"));
+
+// Use the streamingFileSink which supports the recoverable writer
+
+StreamingFileSink<String> fileSink  =  StreamingFileSink.forRowFormat(
+                new Path("cosn://<bucket-appid>/<object-name>"),new SimpleStringEncoder<String>("UTF-8"))
+                .withRollingPolicy(build).build();
+
+```
+
 
 ## 所有配置说明
 
@@ -59,5 +98,6 @@ fs.cosn.bucket.endpoint_suffix: cos.ap-guangzhou.myqcloud.com
 |fs.cosn.server-side-encryption.key | 当开启COS的SSE-C服务端加密算法时，必须配置SSE-C的密钥，密钥格式为base64编码的AES-256密钥，默认为空，不加密| 无 | 否|
 |fs.cosn.crc64.checksum.enabled    | 是否开启CRC64校验。默认不开启，此时无法使用`hadoop fs -checksum`命令获取文件的CRC64校验值。| false | 否 |
 |fs.cosn.traffic.limit | 上传下载带宽的控制选项，819200 ~ 838860800，单位为bits/s。默认值为-1，表示不限制。 | -1 | 否 |
+
 
 ## FAQ

@@ -26,7 +26,7 @@ Flink 1.10
 
 2.将对应版本的预编译包（flink-cos-fs-{flink.version}-{version}.jar）拷贝到`${FLINK_HOME}/plugins/cos-fs-hadoop`目录下；
 
-3.在${FLINK_HOME}/conf/flink-conf.yaml中添加一些COSN相关配置以确保flink能够访问到COS存储桶，这里的配置键与COSN完全兼容，可参考[hadoop-cos:[对象存储 Hadoop 工具 - 工具指南 - 文档中心 - 腾讯云](https://cloud.tencent.com/document/product/436/6884)](https://cloud.tencent.com/document/product/436/6884)，必须配置信息如下：
+3.在${FLINK_HOME}/conf/flink-conf.yaml中添加一些COSN相关配置以确保flink能够访问到COS存储桶，这里的配置键与COSN完全兼容，可参考[hadoop-cos](https://cloud.tencent.com/document/product/436/6884)，必须配置信息如下：
 
 ```yaml
 fs.cosn.impl: org.apache.hadoop.fs.CosFileSystem

@@ -69,6 +69,10 @@
                                     <pattern>com.google.common</pattern>
                                     <shadedPattern>${hadoop.shading.prefix}.com.google.common</shadedPattern>
                                 </relocation>
+                                <relocation>
+                                    <pattern>com.google</pattern>
+                                    <shadedPattern>${hadoop.shading.prefix}.com.google</shadedPattern>
+                                </relocation>
 
                                 <relocation>
                                     <pattern>com.qcloud</pattern>
@@ -78,7 +82,7 @@
                                     <pattern>org.apache.flink.runtime.fs.hdfs</pattern>
                                     <shadedPattern>${cos.shading.prefix}.common</shadedPattern>
                                 </relocation>
-                                
+
                                 <relocation>
                                     <pattern>org.apache.flink.runtime.util</pattern>
                                     <shadedPattern>${cos.shading.prefix}.common</shadedPattern>

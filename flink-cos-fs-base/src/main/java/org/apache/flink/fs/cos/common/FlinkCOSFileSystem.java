@@ -37,6 +37,8 @@ public class FlinkCOSFileSystem extends HadoopFileSystem {
 
     public static final long COS_MULTIPART_UPLOAD_PART_MIN_SIZE = 1 * 1024 * 1024;
 
+    public static final long COS_RECOVER_WAIT_TIME_SECOND = 30;
+
     private final String localTmpDir;
 
     private final FunctionWithException<File, RefCountedFile, IOException> tmpFileCreator;
@@ -49,6 +51,10 @@ public class FlinkCOSFileSystem extends HadoopFileSystem {
 
     private final int maxConcurrentUploadsPerStream;
 
+    private final long timeoutSec;
+
+    private final long initTimestamp; // second
+
     /**
      * Wraps the given Hadoop File System object as a Flink File System object. The given Hadoop
      * file system object is expected to be initialized already.
@@ -60,7 +66,8 @@ public class FlinkCOSFileSystem extends HadoopFileSystem {
             String localTmpDir,
             COSAccessHelper cosAccessHelper,
             long cosUploadPartSize,
-            int maxConcurrentUploadsPerStream) {
+            int maxConcurrentUploadsPerStream,
+            long timeoutSec) {
         super(hadoopFileSystem);
         this.localTmpDir = Preconditions.checkNotNull(localTmpDir);
         this.tmpFileCreator = RefCountedTmpFileCreator.inDirectories(new File(localTmpDir));
@@ -68,6 +75,8 @@ public class FlinkCOSFileSystem extends HadoopFileSystem {
         this.uploadThreadPool = Executors.newCachedThreadPool();
         this.cosUploadPartSize = cosUploadPartSize;
         this.maxConcurrentUploadsPerStream = maxConcurrentUploadsPerStream;
+        this.timeoutSec = timeoutSec;
+        this.initTimestamp = System.currentTimeMillis() / 1000; // second
     }
 
     public String getLocalTmpDir() {
@@ -92,6 +101,8 @@ public class FlinkCOSFileSystem extends HadoopFileSystem {
                 cosAccessHelper,
                 this.uploadThreadPool,
                 cosUploadPartSize,
-                maxConcurrentUploadsPerStream);
+                maxConcurrentUploadsPerStream,
+                this.initTimestamp,
+                this.timeoutSec);
     }
 }

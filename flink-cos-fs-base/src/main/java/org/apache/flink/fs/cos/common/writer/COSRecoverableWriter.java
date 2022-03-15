@@ -25,15 +25,20 @@ import org.apache.flink.fs.cos.common.FlinkCOSFileSystem;
 import org.apache.flink.fs.cos.common.utils.RefCountedFile;
 import org.apache.flink.util.function.FunctionWithException;
 import org.apache.hadoop.fs.FileSystem;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.Executor;
+import java.util.concurrent.TimeUnit;
 
 import static org.apache.flink.util.Preconditions.checkArgument;
 import static org.apache.flink.util.Preconditions.checkNotNull;
 
 public class COSRecoverableWriter implements RecoverableWriter {
+    private static final Logger LOG = LoggerFactory.getLogger(COSRecoverableWriter.class);
+
     private final FunctionWithException<File, RefCountedFile, IOException> tempFileCreator;
 
     private final long userDefinedMinPartSize;
@@ -120,16 +125,32 @@ public class COSRecoverableWriter implements RecoverableWriter {
                 "COS File System cannot recover recoverable for other file system: " + recoverable);
     }
 
+    private static void waitForFinish(long initTimestamp, long timeoutSec) {
+        long wantedTimeSecond = initTimestamp + timeoutSec;
+        long currentTimestamp = System.currentTimeMillis() / 1000;
+        if (currentTimestamp < wantedTimeSecond) {
+            try {
+                TimeUnit.SECONDS.sleep(wantedTimeSecond - currentTimestamp);
+            } catch (InterruptedException e) {
+                LOG.warn("wait for finish occur the interrupt");
+            }
+        }
+    }
+
     public static COSRecoverableWriter writer(
             final FileSystem fs,
             final FunctionWithException<File, RefCountedFile, IOException> tempFileCreator,
             final COSAccessHelper cosAccessHelper,
             final Executor uploadThreadPool,
             final long userDefinedMinPartSize,
-            final int maxConcurrentUploadsPerStream) {
+            final int maxConcurrentUploadsPerStream,
+            final long initTimestamp,
+            final long timeoutSec) {
 
         checkArgument(
                 userDefinedMinPartSize >= FlinkCOSFileSystem.COS_MULTIPART_UPLOAD_PART_MIN_SIZE);
+        LOG.info("create the cos recoverable writer, init: {}, timeout: {}", initTimestamp, timeoutSec);
+        waitForFinish(initTimestamp, timeoutSec);
 
         final COSRecoverableMultipartUploadFactory uploadFactory =
                 new COSRecoverableMultipartUploadFactory(

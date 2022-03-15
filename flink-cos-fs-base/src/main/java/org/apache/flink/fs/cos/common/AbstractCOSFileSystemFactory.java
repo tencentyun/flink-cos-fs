@@ -54,6 +54,13 @@ public abstract class AbstractCOSFileSystemFactory implements FileSystemFactory 
                                     + Runtime.getRuntime().availableProcessors()
                                     + ".");
 
+    private static final ConfigOption<Long> RECOVER_WAIT_TIMESEC = ConfigOptions
+            .key("cos.recover.wait.time.seconds")
+            .defaultValue(FlinkCOSFileSystem.COS_RECOVER_WAIT_TIME_SECOND)
+            .withDescription("" +
+                    "This option is the second wait after recover to make sure the request before recover finish" +
+                    "cos cgi default 60s break the link, it is better to set it bigger than 60");
+
     // The name of the actual file system.
     private final String name;
 
@@ -91,11 +98,13 @@ public abstract class AbstractCOSFileSystemFactory implements FileSystemFactory 
             final String localTempDirectory = localTempDirectories[0];
             final long cosMinPartSize = flinkConfig.getLong(UPLOAD_PART_MIN_SIZE);
             final int maxConcurrentUploads = flinkConfig.getInteger(MAX_CONCURRENT_UPLOADS);
+            final long timeoutSec = flinkConfig.getLong(RECOVER_WAIT_TIMESEC);
             final COSAccessHelper cosAccessHelper =
                     getCosAccessHelper(((CosFileSystem) fs).getStore());
 
             return new FlinkCOSFileSystem(
-                    fs, localTempDirectory, cosAccessHelper, cosMinPartSize, maxConcurrentUploads);
+                    fs, localTempDirectory, cosAccessHelper, cosMinPartSize,
+                    maxConcurrentUploads, timeoutSec);
         } catch (IOException e) {
             throw e;
         } catch (Exception e) {

@@ -13,7 +13,7 @@
 
     <groupId>com.qcloud.cos</groupId>
     <artifactId>flink-cos-fs</artifactId>
-    <version>${parent.version}-0.1.10</version>
+    <version>1.10.0-0.1.10</version>
     <name>Flink : FileSystems : COS FS</name>
 
     <developers>

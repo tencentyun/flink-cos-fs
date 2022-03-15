@@ -13,7 +13,7 @@
 
     <groupId>com.qcloud.cos</groupId>
     <artifactId>flink-cos-fs</artifactId>
-    <version>1.10.0-0.1.8</version>
+    <version>${parent.version}-0.1.10</version>
     <name>Flink : FileSystems : COS FS</name>
 
     <developers>
@@ -26,7 +26,7 @@
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
-        <flink.version>1.10.0</flink.version>
+        <flink.version>${parent.version}</flink.version>
         <fs.hadoopshaded.version>3.1.0</fs.hadoopshaded.version>
     </properties>
 

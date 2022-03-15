@@ -1,12 +1,12 @@
 # Flink-cos-fs
 
-Flink-cos-fs 是腾讯云对象存储系统COS针对Flink的文件系统实现，并且支持了recoverwriter接口。 Flink可以基于该文件系统实现读写COS上的数据以及作为流应用的状态后端。
+Flink-cos-fs 是腾讯云对象存储系统COS针对 Flink 的文件系统实现，并且支持了 recoverwriter 接口。 Flink 可以基于该文件系统实现读写 COS 上的数据以及作为流应用的状态后端。
 
 ## 使用环境
 
 ### 系统环境
 
-支持Linux和Mac OS系统
+支持 Linux 和 Mac OS 系统
 
 ### 软件依赖
 
@@ -15,7 +15,39 @@ Flink 1.10
 
 ## 使用方法
 
-### 获取Flink-cos-fs 发行包
+### 编译或获取 Flink-cos-fs 发行包
+
+#### 编译 flink-cos-fs
+
+flink-cos-fs 默认依赖的是 hadoop-3.1.0 的版本（即是于 flink-1.10 保持一致），使用如下命令即可编译打包：
+
+```bash
+mvn clean package -DskipTests -Dlicense.skip -Dcheckstyle.skip
+```
+
+如果需要编译依赖 hadoop 其他版本的发行包，则需要手动修改项目根路径 pom.xml 中的 `${fs.hadoopshaded.version}` 或者在编译命令中指定 `-Dfs.hadoopshaded.version=3.x.x`，同时修改 flink-fs-hadoop-shaded 模块下的 org.apache.hadoop.util.VersionInfo.java 文件中的 hadoop 版本信息：
+
+```java
+// ...
+		if ("common".equals(component)) {
+			info.setProperty("version", "3.1.0");
+			info.setProperty("revision", "16b70619a24cdcf5d3b0fcf4b58ca77238ccbe6d");
+			info.setProperty("branch", "branch-3.1.0");
+			info.setProperty("user", "wtan");
+			info.setProperty("date", "2018-04-03T04:00Z");
+			info.setProperty("url", "git@github.com:hortonworks/hadoop-common-trunk.git");
+			info.setProperty("srcChecksum", "14182d20c972b3e2105580a1ad6990");
+			info.setProperty("protocVersion", "2.5.0");
+		}
+// ...
+```
+
+特别地，如果需要编译 hadoop 2.x 的版本，除了上述操作以外，还需要在编译命令中，指定 maven 编译使用 `hadoop-2` 的配置：
+```bash
+mvn clean package -DskipTests -Dlicense.skip -Dcheckstyle.skip -Phadoop-2 -Dfs.hadoopshaded.version=2.x.x
+```
+
+最后，编译完成以后，在 `${FLINK_COS_FS}/flink-cos-fs-hadoop/target` 就可以得到 `flink-cos-fs-hadoop-${flink.version}-{version}.jar` 的依赖包。
 
 下载地址：[Flink-cos-fs release](https://github.com/yuyang733/flink-cos-fs/releases)
 
@@ -26,7 +58,7 @@ Flink 1.10
 
 2.将对应版本的预编译包（flink-cos-fs-{flink.version}-{version}.jar）拷贝到`${FLINK_HOME}/plugins/cos-fs-hadoop`目录下；
 
-3.在${FLINK_HOME}/conf/flink-conf.yaml中添加一些COSN相关配置以确保flink能够访问到COS存储桶，这里的配置键与COSN完全兼容，可参考[hadoop-cos](https://cloud.tencent.com/document/product/436/6884)，必须配置信息如下：
+3.在 `${FLINK_HOME}/conf/flink-conf.yaml` 中添加一些 CosN 相关配置以确保 Flink 能够访问到 COS 存储桶，这里的配置键与 CosN 完全兼容，可参考[hadoop-cos](https://cloud.tencent.com/document/product/436/6884)，必须配置信息如下：
 
 ```yaml
 fs.cosn.impl: org.apache.hadoop.fs.CosFileSystem
@@ -38,7 +70,7 @@ fs.cosn.bucket.endpoint_suffix: cos.ap-guangzhou.myqcloud.com
 
 ```
 
-4.在作业的write或sink路径中填写格式为：```cosn://bucket-appid/path```的路径信息即可，例如：
+4.在作业的 write 或 sink 路径中填写格式为：```cosn://bucket-appid/path```的路径信息即可，例如：
 
 ```java
         ...
@@ -51,7 +83,7 @@ fs.cosn.bucket.endpoint_suffix: cos.ap-guangzhou.myqcloud.com
 
 ### 使用示例
 
-以下给出Flink Job读写COS的示例代码：
+以下给出 Flink Job 读写 COS 的示例代码：
 
 ```Java
 // Read from COS bucket
@@ -101,6 +133,6 @@ StreamingFileSink<String> fileSink  =  StreamingFileSink.forRowFormat(
 
 ## FAQ
 
-- Flink 既可以通过[hadoop-cos](https://github.com/tencentyun/hadoop-cos)读写COS中的对象文件，也可以通过flink-cos-fs来读写，这两种有什么区别？
+- Flink 既可以通过[hadoop-cos](https://github.com/tencentyun/hadoop-cos)读写 COS 中的对象文件，也可以通过 flink-cos-fs 来读写，这两种有什么区别？
 
-hadoop-cos实现了Hadoop的兼容文件系统语义，Flink可以通过写Hadoop兼容文件系统的形式写入数据到COS中，但是这种方式不支持的flink的recoverable writer写入，当你使用streamingFileSink写入数据时，要求底层文件系统支持recoverable writer。 因此，Flink-cos-fs基于hadoop-cos扩展实现了flink的recoverable writer，完整地支持了Flink文件系统的语义，因此推荐使用它来访问COS对象。
+hadoop-cos 实现了 Hadoop 的兼容文件系统语义，Flink 可以通过写 Hadoop 兼容文件系统的形式写入数据到 COS 中，但是这种方式不支持的 Flink 的 recoverable writer 写入，当你使用 streamingFileSink 写入数据时，要求底层文件系统支持recoverable writer。 因此，flink-cos-fs 基于 Hadoop-COS (CosN) 扩展实现了 Flink 的recoverable writer，完整地支持了 Flink 文件系统的语义，因此推荐使用它来访问 COS 对象。

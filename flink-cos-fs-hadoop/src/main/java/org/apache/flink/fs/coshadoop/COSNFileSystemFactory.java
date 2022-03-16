@@ -23,8 +23,8 @@ public class COSNFileSystemFactory extends AbstractCOSFileSystemFactory {
 	private static final String FLINK_SHADING_PREFIX = "org.apache.flink.fs.shaded.hadoop.";
 
 	/**
-	 * In order to simplify, we make flink oss configuration keys same with hadoop cos module.
-	 * So, we add all configuration key with prefix `fs.cos` in flink conf to hadoop conf
+	 * In order to simplify, we make flink cos configuration keys same with hadoop cos module.
+	 * So, we add all configuration key with prefix `fs.cosn` in flink conf to hadoop conf
 	 */
 	private static final String[] FLINK_CONFIG_PREFIXES = { "fs.cosn.", "fs.AbstractFileSystem.cosn."};
 

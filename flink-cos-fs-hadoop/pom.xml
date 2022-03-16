@@ -78,7 +78,7 @@
                                     <pattern>org.apache.flink.runtime.fs.hdfs</pattern>
                                     <shadedPattern>${cos.shading.prefix}.common</shadedPattern>
                                 </relocation>
-                                
+
                                 <relocation>
                                     <pattern>org.apache.flink.runtime.util</pattern>
                                     <shadedPattern>${cos.shading.prefix}.common</shadedPattern>

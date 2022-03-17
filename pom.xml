@@ -15,6 +15,11 @@
     <artifactId>flink-cos-fs</artifactId>
     <version>1.10.0-0.1.10</version>
     <name>Flink : FileSystems : COS FS</name>
+    <description>
+        This project aims to provide COS's implementation of the Flink file system interface,
+        so that Flink can not only use the ordinary read and write interfaces to read and write COS, but also use StreamingFileSink,
+        an interface that requires exactly-once semantics to write to COS.
+    </description>
 
     <developers>
         <developer>
@@ -22,6 +27,13 @@
             <email>iainyu@tencent.com</email>
         </developer>
     </developers>
+
+    <licenses>
+        <license>
+            <name>Tencent Cloud with MIT License</name>
+            <url>https://github.com/tencentyun/flink-cos-fs/blob/master/LICENSE</url>
+        </license>
+    </licenses>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>

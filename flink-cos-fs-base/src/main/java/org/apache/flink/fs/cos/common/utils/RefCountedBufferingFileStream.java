@@ -15,10 +15,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.apache.flink.fs.cos.common.utils;
 
 import org.apache.flink.annotation.VisibleForTesting;
 import org.apache.flink.util.function.FunctionWithException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,6 +30,7 @@ import java.io.IOException;
 import static org.apache.flink.util.Preconditions.checkArgument;
 import static org.apache.flink.util.Preconditions.checkNotNull;
 
+/** RefCountedBufferingFileStream. */
 public class RefCountedBufferingFileStream extends RefCountedFSOutputStream {
     private static final Logger LOG = LoggerFactory.getLogger(RefCountedBufferingFileStream.class);
 

@@ -15,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.apache.flink.fs.cos.common.writer;
 
 import org.apache.flink.core.fs.Path;
@@ -24,6 +25,7 @@ import org.apache.flink.core.io.SimpleVersionedSerializer;
 import org.apache.flink.fs.cos.common.FlinkCOSFileSystem;
 import org.apache.flink.fs.cos.common.utils.RefCountedFile;
 import org.apache.flink.util.function.FunctionWithException;
+
 import org.apache.hadoop.fs.FileSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,6 +38,7 @@ import java.util.concurrent.TimeUnit;
 import static org.apache.flink.util.Preconditions.checkArgument;
 import static org.apache.flink.util.Preconditions.checkNotNull;
 
+/** COSRecoverableWriter. */
 public class COSRecoverableWriter implements RecoverableWriter {
     private static final Logger LOG = LoggerFactory.getLogger(COSRecoverableWriter.class);
 
@@ -149,7 +152,10 @@ public class COSRecoverableWriter implements RecoverableWriter {
 
         checkArgument(
                 userDefinedMinPartSize >= FlinkCOSFileSystem.COS_MULTIPART_UPLOAD_PART_MIN_SIZE);
-        LOG.info("create the cos recoverable writer, init: {}, timeout: {}", initTimestamp, timeoutSec);
+        LOG.info(
+                "create the cos recoverable writer, init: {}, timeout: {}",
+                initTimestamp,
+                timeoutSec);
         waitForFinish(initTimestamp, timeoutSec);
 
         final COSRecoverableMultipartUploadFactory uploadFactory =

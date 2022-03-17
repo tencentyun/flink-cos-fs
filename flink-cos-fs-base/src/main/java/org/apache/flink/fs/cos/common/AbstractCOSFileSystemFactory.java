@@ -15,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.apache.flink.fs.cos.common;
 
 import org.apache.flink.configuration.ConfigOption;
@@ -25,6 +26,7 @@ import org.apache.flink.core.fs.FileSystem;
 import org.apache.flink.core.fs.FileSystemFactory;
 import org.apache.flink.fs.cos.common.writer.COSAccessHelper;
 import org.apache.flink.util.Preconditions;
+
 import org.apache.hadoop.fs.CosFileSystem;
 import org.apache.hadoop.fs.NativeFileSystemStore;
 import org.slf4j.Logger;
@@ -54,12 +56,13 @@ public abstract class AbstractCOSFileSystemFactory implements FileSystemFactory 
                                     + Runtime.getRuntime().availableProcessors()
                                     + ".");
 
-    private static final ConfigOption<Long> RECOVER_WAIT_TIMESEC = ConfigOptions
-            .key("cos.recover.wait.time.seconds")
-            .defaultValue(FlinkCOSFileSystem.COS_RECOVER_WAIT_TIME_SECOND)
-            .withDescription("" +
-                    "This option is the second wait after recover to make sure the request before recover finish" +
-                    "cos cgi default 60s break the link, it is better to set it bigger than 60");
+    private static final ConfigOption<Long> RECOVER_WAIT_TIMESEC =
+            ConfigOptions.key("cos.recover.wait.time.seconds")
+                    .defaultValue(FlinkCOSFileSystem.COS_RECOVER_WAIT_TIME_SECOND)
+                    .withDescription(
+                            ""
+                                    + "This option is the second wait after recover to make sure the request before recover finish"
+                                    + "cos cgi default 60s break the link, it is better to set it bigger than 60");
 
     // The name of the actual file system.
     private final String name;
@@ -103,8 +106,12 @@ public abstract class AbstractCOSFileSystemFactory implements FileSystemFactory 
                     getCosAccessHelper(((CosFileSystem) fs).getStore());
 
             return new FlinkCOSFileSystem(
-                    fs, localTempDirectory, cosAccessHelper, cosMinPartSize,
-                    maxConcurrentUploads, timeoutSec);
+                    fs,
+                    localTempDirectory,
+                    cosAccessHelper,
+                    cosMinPartSize,
+                    maxConcurrentUploads,
+                    timeoutSec);
         } catch (IOException e) {
             throw e;
         } catch (Exception e) {

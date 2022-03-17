@@ -15,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.apache.flink.fs.cos.common.writer;
 
 import org.apache.flink.core.fs.RecoverableFsDataOutputStream;
@@ -22,10 +23,12 @@ import org.apache.flink.core.fs.RecoverableWriter;
 import org.apache.flink.fs.cos.common.utils.RefCountedFSOutputStream;
 
 import javax.annotation.Nullable;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Optional;
 
+/** the Recoverable MPU interface. */
 public interface RecoverableMultipartUpload {
     RecoverableFsDataOutputStream.Committer snapshotAndGetCommitter() throws IOException;
 

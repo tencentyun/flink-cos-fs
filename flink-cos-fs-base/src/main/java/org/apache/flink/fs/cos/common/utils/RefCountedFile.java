@@ -15,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.apache.flink.fs.cos.common.utils;
 
 import org.apache.flink.annotation.VisibleForTesting;
@@ -29,6 +30,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.apache.flink.util.Preconditions.checkNotNull;
 
+/** RefCountedFile. */
 public class RefCountedFile implements RefCounted {
     private final File file;
     private final OffsetTrackOutputStream outputStream;

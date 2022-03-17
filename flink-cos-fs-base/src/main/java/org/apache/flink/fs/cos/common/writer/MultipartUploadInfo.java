@@ -15,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.apache.flink.fs.cos.common.writer;
 
 import com.qcloud.cos.model.PartETag;
@@ -27,6 +28,7 @@ import java.util.Optional;
 import static org.apache.flink.util.Preconditions.checkArgument;
 import static org.apache.flink.util.Preconditions.checkNotNull;
 
+/** MultipartUploadInfo. */
 public class MultipartUploadInfo {
 
     private final String objectName;
@@ -39,7 +41,7 @@ public class MultipartUploadInfo {
 
     /**
      * This contains both the parts that are already uploaded but also the ones that are queued to
-     * be uploaded at the {@link }.
+     * be uploaded.
      */
     private int numberOfRegisteredParts;
 

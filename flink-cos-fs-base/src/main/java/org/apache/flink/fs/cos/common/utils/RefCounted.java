@@ -15,10 +15,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.apache.flink.fs.cos.common.utils;
 
 import org.apache.flink.annotation.Internal;
 
+/** The interface for ref count IOStream. */
 @Internal
 public interface RefCounted {
     void retain();

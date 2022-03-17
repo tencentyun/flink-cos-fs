@@ -22,7 +22,7 @@ Flink 1.10
 flink-cos-fs 默认依赖的是 hadoop-3.1.0 的版本（即是于 flink-1.10 保持一致），使用如下命令即可编译打包：
 
 ```bash
-mvn clean package -DskipTests -Dlicense.skip -Dcheckstyle.skip
+mvn clean package -DskipTests
 ```
 
 如果需要编译依赖 hadoop 其他版本的发行包，则需要手动修改项目根路径 pom.xml 中的 `${fs.hadoopshaded.version}` 或者在编译命令中指定 `-Dfs.hadoopshaded.version=3.x.x`，同时修改 flink-fs-hadoop-shaded 模块下的 org.apache.hadoop.util.VersionInfo.java 文件中的 hadoop 版本信息：
@@ -44,7 +44,7 @@ mvn clean package -DskipTests -Dlicense.skip -Dcheckstyle.skip
 
 特别地，如果需要编译 hadoop 2.x 的版本，除了上述操作以外，还需要在编译命令中，指定 maven 编译使用 `hadoop-2` 的配置：
 ```bash
-mvn clean package -DskipTests -Dlicense.skip -Dcheckstyle.skip -Phadoop-2 -Dfs.hadoopshaded.version=2.x.x
+mvn clean package -DskipTests -Phadoop-2 -Dfs.hadoopshaded.version=2.x.x
 ```
 
 最后，编译完成以后，在 `${FLINK_COS_FS}/flink-cos-fs-hadoop/target` 就可以得到 `flink-cos-fs-hadoop-${flink.version}-{version}.jar` 的依赖包。

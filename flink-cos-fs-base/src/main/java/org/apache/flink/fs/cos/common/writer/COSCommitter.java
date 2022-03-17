@@ -15,11 +15,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.apache.flink.fs.cos.common.writer;
 
-import com.qcloud.cos.model.PartETag;
 import org.apache.flink.core.fs.RecoverableFsDataOutputStream;
 import org.apache.flink.core.fs.RecoverableWriter;
+
+import com.qcloud.cos.model.PartETag;
 import org.apache.hadoop.fs.FileMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +31,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
+/** The COSCommitter for implementing the exactly-once. */
 public class COSCommitter implements RecoverableFsDataOutputStream.Committer {
     private static final Logger LOG = LoggerFactory.getLogger(COSCommitter.class);
 

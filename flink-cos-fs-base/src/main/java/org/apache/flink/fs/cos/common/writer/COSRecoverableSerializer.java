@@ -15,10 +15,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.apache.flink.fs.cos.common.writer;
 
-import com.qcloud.cos.model.PartETag;
 import org.apache.flink.core.io.SimpleVersionedSerializer;
+
+import com.qcloud.cos.model.PartETag;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -28,6 +30,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
+/** COSRecoverableSerializer. */
 public class COSRecoverableSerializer implements SimpleVersionedSerializer<COSRecoverable> {
     static final COSRecoverableSerializer INSTANCE = new COSRecoverableSerializer();
 

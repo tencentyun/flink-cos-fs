@@ -15,24 +15,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.apache.flink.fs.cos.common.writer;
 
-import com.qcloud.cos.model.PartETag;
-import com.qcloud.cos.thirdparty.org.apache.commons.codec.digest.DigestUtils;
 import org.apache.flink.core.fs.RecoverableFsDataOutputStream;
 import org.apache.flink.fs.cos.common.utils.RefCountedFSOutputStream;
 
+import com.qcloud.cos.model.PartETag;
+import com.qcloud.cos.thirdparty.org.apache.commons.codec.digest.DigestUtils;
+
 import javax.annotation.Nullable;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Deque;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 
-import static org.apache.flink.util.Preconditions.*;
+import static org.apache.flink.util.Preconditions.checkArgument;
+import static org.apache.flink.util.Preconditions.checkNotNull;
+import static org.apache.flink.util.Preconditions.checkState;
 
+/** The Recoverable MPU implementation. */
 public class RecoverableMultipartUploadImpl implements RecoverableMultipartUpload {
     private final COSAccessHelper cosAccessHelper;
 

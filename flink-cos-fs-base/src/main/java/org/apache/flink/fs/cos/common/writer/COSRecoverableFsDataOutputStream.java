@@ -15,9 +15,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.apache.flink.fs.cos.common.writer;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.flink.annotation.PublicEvolving;
 import org.apache.flink.core.fs.RecoverableFsDataOutputStream;
 import org.apache.flink.core.fs.RecoverableWriter;
@@ -27,7 +27,10 @@ import org.apache.flink.fs.cos.common.utils.RefCountedFSOutputStream;
 import org.apache.flink.fs.cos.common.utils.RefCountedFile;
 import org.apache.flink.util.function.FunctionWithException;
 
+import org.apache.commons.io.IOUtils;
+
 import javax.annotation.concurrent.NotThreadSafe;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Optional;
@@ -35,6 +38,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import static org.apache.flink.util.Preconditions.checkArgument;
 
+/** COSRecoverableFsDataOutputStream. */
 @PublicEvolving
 @NotThreadSafe
 public class COSRecoverableFsDataOutputStream extends RecoverableFsDataOutputStream {

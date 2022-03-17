@@ -15,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.apache.flink.fs.cos.common;
 
 import org.apache.flink.core.fs.FileSystemKind;
@@ -26,6 +27,7 @@ import org.apache.flink.fs.cos.common.writer.COSRecoverableWriter;
 import org.apache.flink.runtime.fs.hdfs.HadoopFileSystem;
 import org.apache.flink.util.Preconditions;
 import org.apache.flink.util.function.FunctionWithException;
+
 import org.apache.hadoop.fs.FileSystem;
 
 import java.io.File;
@@ -33,6 +35,7 @@ import java.io.IOException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
+/** Flink COS FileSystem implementation. */
 public class FlinkCOSFileSystem extends HadoopFileSystem {
 
     public static final long COS_MULTIPART_UPLOAD_PART_MIN_SIZE = 1 * 1024 * 1024;

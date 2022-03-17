@@ -15,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.apache.flink.fs.cos.common.utils;
 
 import org.apache.flink.util.function.FunctionWithException;
@@ -31,6 +32,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.apache.flink.util.Preconditions.checkArgument;
 
+/** RefCountedTmpFileCreator. */
 public class RefCountedTmpFileCreator
         implements FunctionWithException<File, RefCountedFile, IOException> {
 

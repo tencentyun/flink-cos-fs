@@ -15,19 +15,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.apache.hadoop.conf;
 
 import java.util.Locale;
 
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
+/**
+ * This class is copied from the Hadoop Source Code (Apache License 2.0) in order to override config
+ * keys to support shading.
+ */
 public class StorageSize {
     private final StorageUnit unit;
     private final double value;
 
     /**
-     * Constucts a Storage Measure, which contains the value and the unit of
-     * measure.
+     * Constucts a Storage Measure, which contains the value and the unit of measure.
      *
      * @param unit - Unit of Measure
      * @param value - Numeric value.
@@ -37,8 +41,8 @@ public class StorageSize {
         this.value = value;
     }
 
-    private static void checkState(boolean state, String errorString){
-        if(!state) {
+    private static void checkState(boolean state, String errorString) {
+        if (!state) {
             throw new IllegalStateException(errorString);
         }
     }
@@ -48,19 +52,20 @@ public class StorageSize {
         String sanitizedValue = value.trim().toLowerCase(Locale.ENGLISH);
         StorageUnit parsedUnit = null;
         for (StorageUnit unit : StorageUnit.values()) {
-            if (sanitizedValue.endsWith(unit.getShortName()) ||
-                    sanitizedValue.endsWith(unit.getLongName()) ||
-                    sanitizedValue.endsWith(unit.getSuffixChar())) {
+            if (sanitizedValue.endsWith(unit.getShortName())
+                    || sanitizedValue.endsWith(unit.getLongName())
+                    || sanitizedValue.endsWith(unit.getSuffixChar())) {
                 parsedUnit = unit;
                 break;
             }
         }
 
         if (parsedUnit == null) {
-            throw new IllegalArgumentException(value + " is not in expected format." +
-                    "Expected format is <number><unit>. e.g. 1000MB");
+            throw new IllegalArgumentException(
+                    value
+                            + " is not in expected format."
+                            + "Expected format is <number><unit>. e.g. 1000MB");
         }
-
 
         String suffix = "";
         boolean found = false;
@@ -82,13 +87,10 @@ public class StorageSize {
             suffix = parsedUnit.getSuffixChar();
         }
 
-        checkState(found, "Something is wrong, we have to find a " +
-                "match. Internal error.");
+        checkState(found, "Something is wrong, we have to find a " + "match. Internal error.");
 
-        String valString =
-                sanitizedValue.substring(0, value.length() - suffix.length());
+        String valString = sanitizedValue.substring(0, value.length() - suffix.length());
         return new StorageSize(parsedUnit, Double.parseDouble(valString));
-
     }
 
     public StorageUnit getUnit() {

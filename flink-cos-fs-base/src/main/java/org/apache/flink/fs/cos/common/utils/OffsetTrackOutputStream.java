@@ -15,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.apache.flink.fs.cos.common.utils;
 
 import org.apache.flink.annotation.Internal;
@@ -24,7 +25,7 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.OutputStream;
 
-/** The {@link OutputStream} that keeps track of its current length; */
+/** The {@link OutputStream} that keeps track of its current length. */
 @Internal
 public final class OffsetTrackOutputStream implements Closeable {
     private final OutputStream currentOut;

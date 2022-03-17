@@ -15,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.apache.flink.fs.cos.common.writer;
 
 import org.apache.flink.annotation.Internal;
@@ -24,6 +25,7 @@ import org.apache.flink.fs.cos.common.utils.RefCountedFile;
 import org.apache.flink.runtime.fs.hdfs.HadoopFileSystem;
 import org.apache.flink.util.Preconditions;
 import org.apache.flink.util.function.FunctionWithException;
+
 import org.apache.hadoop.fs.FileSystem;
 
 import java.io.File;
@@ -31,6 +33,7 @@ import java.io.IOException;
 import java.util.Optional;
 import java.util.concurrent.Executor;
 
+/** COSRecoverableMultipartUploadFactory. */
 @Internal
 public final class COSRecoverableMultipartUploadFactory {
     private final org.apache.hadoop.fs.FileSystem fs;

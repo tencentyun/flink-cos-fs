@@ -15,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.apache.flink.fs.cos.common.writer;
 
 import com.qcloud.cos.model.CompleteMultipartUploadResult;
@@ -25,6 +26,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+/** The COSAccessHelper interface. */
 public interface COSAccessHelper {
     /**
      * Initialize a multipart upload.
@@ -37,7 +39,7 @@ public interface COSAccessHelper {
     String startMultipartUpload(String key) throws IOException;
 
     /**
-     * Uploads a part and associates it with MPU with the provided
+     * Uploads a part and associates it with MPU with the provided.
      *
      * @param key The key which MPU is associated with
      * @param uploadId the upload id of the MPU

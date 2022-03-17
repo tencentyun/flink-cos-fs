@@ -15,17 +15,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.apache.flink.fs.cos.common.writer;
 
-import com.qcloud.cos.model.PartETag;
 import org.apache.flink.core.fs.RecoverableWriter;
 
+import com.qcloud.cos.model.PartETag;
+
 import javax.annotation.Nullable;
+
 import java.util.List;
 
 import static org.apache.flink.util.Preconditions.checkArgument;
 import static org.apache.flink.util.Preconditions.checkNotNull;
 
+/** The COS Recoverable to implement the recover from the checkpoint. */
 public final class COSRecoverable implements RecoverableWriter.ResumeRecoverable {
 
     private final String uploadId;

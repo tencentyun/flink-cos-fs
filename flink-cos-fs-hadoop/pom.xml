@@ -18,6 +18,7 @@
         <!-- hadoop.shading.prefix 必须跟 hadoop shaded module 中的-->
         <hadoop.shading.prefix>org.apache.flink.fs.shaded.hadoop</hadoop.shading.prefix>
         <cos.shading.prefix>org.apache.flink.fs.coshadoop</cos.shading.prefix>
+        <maven.deploy.skip>false</maven.deploy.skip>
     </properties>
 
     <dependencies>

@@ -51,6 +51,19 @@ mvn clean package -DskipTests -Phadoop-2 -Dfs.hadoopshaded.version=2.x.x
 
 下载地址：[Flink-cos-fs release](https://github.com/yuyang733/flink-cos-fs/releases)
 
+从 Maven 中央仓库中依赖：
+
+```xml
+<dependencies>
+    <dependency>
+        <groupId>com.qcloud.cos</groupId>
+        <artifactId>flink-cos-fs-hadoop</artifactId>
+        <version>${flink.version>-${version></version>
+    </dependency>
+</dependencies>
+
+```
+
 
 ### 安装Flink-cos-fs依赖
 

@@ -87,10 +87,16 @@ fs.cosn.bucket.endpoint_suffix: cos.ap-guangzhou.myqcloud.com
 
 ```java
         ...
-        StreamingFileSink<String> fileSink  =  StreamingFileSink.forRowFormat(
-                new Path("cosn://flink-test-1250000000/sink-test"),
-                new SimpleStringEncoder<String>("UTF-8"))
-                .build();
+        StreamingFileSink<String> streamingFileSink =
+        StreamingFileSink.forRowFormat(
+        new Path(outputPath), new SimpleStringEncoder<String>("UTF-8"))
+        .withRollingPolicy(
+        DefaultRollingPolicy.builder()
+        .withRolloverInterval(TimeUnit.SECONDS.toMillis(5))
+        .withInactivityInterval(TimeUnit.SECONDS.toMillis(5))
+        .withMaxPartSize(1024)
+        .build())
+        .build();
         ...
 ```
 

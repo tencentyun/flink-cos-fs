@@ -10,6 +10,8 @@ import org.apache.flink.streaming.api.functions.sink.filesystem.rollingpolicies.
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.concurrent.TimeUnit;
+
 /** Flink StreamingFileSink Test. */
 public class StreamingFileSinkTest {
     private static final Logger LOG = LoggerFactory.getLogger(StreamingFileSinkTest.class);
@@ -29,13 +31,16 @@ public class StreamingFileSinkTest {
             return;
         }
         String outputPath = parameterTool.getRequired("output");
-
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         StreamingFileSink<String> streamingFileSink =
                 StreamingFileSink.forRowFormat(
                                 new Path(outputPath), new SimpleStringEncoder<String>("UTF-8"))
                         .withRollingPolicy(
-                                DefaultRollingPolicy.create().withRolloverInterval(1000).build())
+                                DefaultRollingPolicy.builder()
+                                        .withRolloverInterval(TimeUnit.SECONDS.toMillis(5))
+                                        .withInactivityInterval(TimeUnit.SECONDS.toMillis(5))
+                                        .withMaxPartSize(1024)
+                                        .build())
                         .build();
         if (parameterTool.get("input") == null) {
             // Use the mockSource to generate the test data

@@ -19,7 +19,9 @@
 package org.apache.flink.fs.cos.common;
 
 import org.apache.flink.core.fs.FileSystemKind;
+import org.apache.flink.core.fs.Path;
 import org.apache.flink.core.fs.RecoverableWriter;
+import org.apache.flink.fs.cos.common.fswriter.COSPosixRecoverableWriter;
 import org.apache.flink.fs.cos.common.utils.RefCountedFile;
 import org.apache.flink.fs.cos.common.utils.RefCountedTmpFileCreator;
 import org.apache.flink.fs.cos.common.writer.COSAccessHelper;
@@ -58,6 +60,8 @@ public class FlinkCOSFileSystem extends HadoopFileSystem {
 
     private final long initTimestamp; // second
 
+    private final boolean isPosixProcess;
+
     /**
      * Wraps the given Hadoop File System object as a Flink File System object. The given Hadoop
      * file system object is expected to be initialized already.
@@ -70,7 +74,8 @@ public class FlinkCOSFileSystem extends HadoopFileSystem {
             COSAccessHelper cosAccessHelper,
             long cosUploadPartSize,
             int maxConcurrentUploadsPerStream,
-            long timeoutSec) {
+            long timeoutSec,
+            boolean isPosixProcess) {
         super(hadoopFileSystem);
         this.localTmpDir = Preconditions.checkNotNull(localTmpDir);
         this.tmpFileCreator = RefCountedTmpFileCreator.inDirectories(new File(localTmpDir));
@@ -80,6 +85,7 @@ public class FlinkCOSFileSystem extends HadoopFileSystem {
         this.maxConcurrentUploadsPerStream = maxConcurrentUploadsPerStream;
         this.timeoutSec = timeoutSec;
         this.initTimestamp = System.currentTimeMillis() / 1000; // second
+        this.isPosixProcess = isPosixProcess;
     }
 
     public String getLocalTmpDir() {
@@ -98,14 +104,23 @@ public class FlinkCOSFileSystem extends HadoopFileSystem {
                     "This cos file system implementation does not support recoverable writers.");
         }
 
-        return COSRecoverableWriter.writer(
-                getHadoopFileSystem(),
-                this.tmpFileCreator,
-                cosAccessHelper,
-                this.uploadThreadPool,
-                cosUploadPartSize,
-                maxConcurrentUploadsPerStream,
-                this.initTimestamp,
-                this.timeoutSec);
+        if (this.isPosixProcess) {
+            return new COSPosixRecoverableWriter(getHadoopFileSystem());
+        } else {
+            return COSRecoverableWriter.writer(
+                    getHadoopFileSystem(),
+                    this.tmpFileCreator,
+                    cosAccessHelper,
+                    this.uploadThreadPool,
+                    cosUploadPartSize,
+                    maxConcurrentUploadsPerStream,
+                    this.initTimestamp,
+                    this.timeoutSec);
+        }
+    }
+
+    // utilities
+    public static org.apache.hadoop.fs.Path toHadoopPath(Path path) {
+        return new org.apache.hadoop.fs.Path(path.toUri());
     }
 }

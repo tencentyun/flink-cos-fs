@@ -41,7 +41,7 @@ public class COSNFileSystemFactory extends AbstractCOSFileSystemFactory {
     private static final Set<String> CONFIG_KEYS_TO_SHADE =
             Collections.singleton("fs.cosn.credentials.provider");
 
-    private static final String FLINK_SHADING_PREFIX = "org.apache.flink.fs.shaded.hadoop.";
+    private static final String FLINK_SHADING_PREFIX = "org.apache.flink.fs.shaded.hadoop3.";
 
     /**
      * In order to simplify, we make flink cos configuration keys same with hadoop cos module. So,

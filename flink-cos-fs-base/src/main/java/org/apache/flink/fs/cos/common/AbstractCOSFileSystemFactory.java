@@ -28,6 +28,7 @@ import org.apache.flink.fs.cos.common.writer.COSAccessHelper;
 import org.apache.flink.util.Preconditions;
 
 import org.apache.hadoop.fs.CosFileSystem;
+import org.apache.hadoop.fs.CosNConfigKeys;
 import org.apache.hadoop.fs.NativeFileSystemStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -103,7 +104,18 @@ public abstract class AbstractCOSFileSystemFactory implements FileSystemFactory 
             final int maxConcurrentUploads = flinkConfig.getInteger(MAX_CONCURRENT_UPLOADS);
             final long timeoutSec = flinkConfig.getLong(RECOVER_WAIT_TIMESEC);
             final COSAccessHelper cosAccessHelper =
-                    getCosAccessHelper(((CosFileSystem) fs).getStore());
+                    getCosAccessHelper(((CosFileSystem)fs).getStore());
+
+            // according to the posix bucket implement to judge which writer to use.
+            boolean isPosixProcess = false;
+            String bucketImpl = hadoopConfiguration.get(CosNConfigKeys.COSN_POSIX_BUCKET_FS_IMPL);
+            if (null != bucketImpl) {
+                if (bucketImpl.equals(CosNConfigKeys.DEFAULT_COSN_POSIX_BUCKET_FS_IMPL)) {
+                    isPosixProcess = true;
+                }
+            }
+            LOG.info("Creating the Flink cos file system, " +
+                    "create posix process recover writer: {}", isPosixProcess);
 
             return new FlinkCOSFileSystem(
                     fs,
@@ -111,7 +123,8 @@ public abstract class AbstractCOSFileSystemFactory implements FileSystemFactory 
                     cosAccessHelper,
                     cosMinPartSize,
                     maxConcurrentUploads,
-                    timeoutSec);
+                    timeoutSec,
+                    isPosixProcess);
         } catch (IOException e) {
             throw e;
         } catch (Exception e) {

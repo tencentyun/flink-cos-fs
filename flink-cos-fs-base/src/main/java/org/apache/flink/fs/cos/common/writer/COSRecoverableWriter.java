@@ -156,6 +156,7 @@ public class COSRecoverableWriter implements RecoverableWriter {
                 "create the cos recoverable writer, init: {}, timeout: {}",
                 initTimestamp,
                 timeoutSec);
+        // only mpu way need wait for past part finish
         waitForFinish(initTimestamp, timeoutSec);
 
         final COSRecoverableMultipartUploadFactory uploadFactory =

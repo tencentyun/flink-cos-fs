@@ -58,10 +58,16 @@
                                 </includes>
                             </artifactSet>
                             <relocations>
+                                <!-- TODO: merge bucket network load org.apache.hadoop.* relate class,
+                                if shaded relate class will cause the ClassNotFound, but if not shaded
+                                must keep not conflict with local hadoop version.
+                                may be have some better way!? -->
+<!--
                                 <relocation>
                                     <pattern>org.apache.hadoop</pattern>
                                     <shadedPattern>${hadoop.shading.prefix}.org.apache.hadoop</shadedPattern>
                                 </relocation>
+-->
                                 <relocation>
                                     <pattern>org.apache.commons</pattern>
                                     <shadedPattern>${hadoop.shading.prefix}.org.apache.commons</shadedPattern>
@@ -74,6 +80,10 @@
                                 <relocation>
                                     <pattern>com.qcloud</pattern>
                                     <shadedPattern>${cos.shading.prefix}.shaded.com.qcloud</shadedPattern>
+                                    <excludes>
+                                        <!-- avoid relocate fs lock class cause network can not load real jar-->
+                                        <exclude>com.qcloud.chdfs.*</exclude>
+                                    </excludes>
                                 </relocation>
                                 <relocation>
                                     <pattern>org.apache.flink.runtime.fs.hdfs</pattern>

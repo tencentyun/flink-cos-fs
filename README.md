@@ -149,6 +149,16 @@ StreamingFileSink<String> fileSink  =  StreamingFileSink.forRowFormat(
 |fs.cosn.crc64.checksum.enabled    | 是否开启CRC64校验。默认不开启，此时无法使用`hadoop fs -checksum`命令获取文件的CRC64校验值。| false | 否 |
 |fs.cosn.traffic.limit | 上传下载带宽的控制选项，819200 ~ 838860800，单位为bits/s。默认值为-1，表示不限制。 | -1 | 否 |
 
+## 使用POSIX Bucket配置说明
+| 属性键                             | 说明                | 默认值 | 必填项 |
+|:-----------------------------------:|:--------------------|:-----:|:---:|
+|fs.cosn.trsf.fs.AbstractFileSystem.ofs.impl|元数据加速实现类，com.qcloud.chdfs.fs.CHDFSDelegateFSAdapter|无|是|
+|fs.cosn.trsf.fs.ofs.impl| 元数据加速实现类，com.qcloud.chdfs.fs.CHDFSHadoopFileSystemAdapter | 无  | 是|
+|fs.cosn.trsf.fs.ofs.tmp.cache.dir                      | 元数据加速临时目录，给足空间及权限，例如/data/emr/hdfs/tmp/chdfs/ | 无|是|
+|fs.cosn.trsf.fs.ofs.user.appid   | 客户bucket对应的appid | 无 |是|
+|fs.cosn.trsf.fs.ofs.bucket.region           | 客户bucket所在的园区 | 无 | 是|
+|fs.cosn.trsf.fs.ofs.upload.flush.flag                   | 客户端flush开关，flink on cos场景必须设置为 true |false | 否|
+
 
 ## FAQ
 

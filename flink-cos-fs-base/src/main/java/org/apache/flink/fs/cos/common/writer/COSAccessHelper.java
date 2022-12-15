@@ -73,4 +73,6 @@ public interface COSAccessHelper {
     long getObject(String key, File targetLocation) throws IOException;
 
     FileMetadata getObjectMetadata(String key) throws IOException;
+
+    boolean isPosixBucket();
 }

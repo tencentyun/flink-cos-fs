@@ -44,10 +44,12 @@
                             <groupId>xmlenc</groupId>
                             <artifactId>xmlenc</artifactId>
                         </exclusion>
+                        <!-- chdfs network use the httpcommonents content but provided, after 2.9 version.
                         <exclusion>
                             <groupId>org.apache.httpcomponents</groupId>
                             <artifactId>httpclient</artifactId>
                         </exclusion>
+                        -->
                         <exclusion>
                             <groupId>commons-net</groupId>
                             <artifactId>commons-net</artifactId>
@@ -182,10 +184,12 @@
                             <groupId>org.apache.commons</groupId>
                             <artifactId>commons-math3</artifactId>
                         </exclusion>
+                        <!-- chdfs network use the httpcommonents content but provided, after 2.9 version.
                         <exclusion>
                             <groupId>org.apache.httpcomponents</groupId>
                             <artifactId>httpclient</artifactId>
                         </exclusion>
+                        -->
                         <exclusion>
                             <groupId>commons-net</groupId>
                             <artifactId>commons-net</artifactId>

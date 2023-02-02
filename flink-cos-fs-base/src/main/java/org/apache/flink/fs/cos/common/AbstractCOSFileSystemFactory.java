@@ -94,7 +94,9 @@ public abstract class AbstractCOSFileSystemFactory implements FileSystemFactory 
             org.apache.hadoop.conf.Configuration hadoopConfiguration =
                     this.getHadoopConfiguration();
             org.apache.hadoop.fs.FileSystem fs = createHadoopFileSystem();
-            fs.initialize(getInitURI(fsUri, hadoopConfiguration), hadoopConfiguration);
+            URI uri = getInitURI(fsUri, hadoopConfiguration);
+            String bucket = uri.getHost();
+            fs.initialize(uri, hadoopConfiguration);
 
             final String[] localTempDirectories =
                     ConfigurationUtils.parseTempDirectories(flinkConfiguration);
@@ -106,16 +108,29 @@ public abstract class AbstractCOSFileSystemFactory implements FileSystemFactory 
             final COSAccessHelper cosAccessHelper =
                     getCosAccessHelper(((CosFileSystem)fs).getStore());
 
-            // according to the posix bucket implement to judge which writer to use.
+            // after hadoop cos fix the setting change to get flag from the cos access helper, avoid head bucket twice.
+            // boolean isPosixBucket = cosAccessHelper.isPosixBucket();
+            boolean isPosixBucket = ((CosFileSystem)fs).getStore().headBucket(bucket).isMergeBucket();
             boolean isPosixProcess = false;
-            String bucketImpl = hadoopConfiguration.get(CosNConfigKeys.COSN_POSIX_BUCKET_FS_IMPL);
-            if (null != bucketImpl) {
-                if (bucketImpl.equals(CosNConfigKeys.DEFAULT_COSN_POSIX_BUCKET_FS_IMPL)) {
+
+            // according to the head bucket result and implement config to judge which writer to use.
+            String bucketImpl = "";
+            if (isPosixBucket) {
+                bucketImpl = hadoopConfiguration.get(CosNConfigKeys.COSN_POSIX_BUCKET_FS_IMPL);
+                if (null != bucketImpl) {
+                    if (bucketImpl.equals(CosNConfigKeys.DEFAULT_COSN_POSIX_BUCKET_FS_IMPL)) {
+                        isPosixProcess = true;
+                    }
+                } else {
+                    // default use the posix way to query posix bucket;
                     isPosixProcess = true;
                 }
             }
+
             LOG.info("Creating the Flink cos file system, " +
-                    "create posix process recover writer: {}", isPosixProcess);
+                    "create posix process recover writer: {}, " +
+                            "bucket {} is posix bucket: {}, bucket impl {}.",
+                    isPosixProcess, bucket, isPosixBucket, bucketImpl);
 
             return new FlinkCOSFileSystem(
                     fs,

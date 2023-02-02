@@ -107,4 +107,9 @@ public class HadoopCOSAccessHelper implements COSAccessHelper {
             throw new FileNotFoundException("No such file for the key '" + key + "'");
         }
     }
+
+    @Override
+    public boolean isPosixBucket() {
+        return this.store.isPosixBucket();
+    }
 }

@@ -68,6 +68,12 @@
                                     <shadedPattern>${hadoop.shading.prefix}.org.apache.hadoop</shadedPattern>
                                 </relocation>
 -->
+                                <!-- used by ranger to load provider class, which must test for other provider -->
+                                <relocation>
+                                    <pattern>org.apache.hadoop.fs.auth</pattern>
+                                    <shadedPattern>${hadoop.shading.prefix}.org.apache.hadoop.fs.auth</shadedPattern>
+                                </relocation>
+
                                 <relocation>
                                     <pattern>org.apache.commons</pattern>
                                     <shadedPattern>${hadoop.shading.prefix}.org.apache.commons</shadedPattern>
@@ -82,7 +88,7 @@
                                     <shadedPattern>${cos.shading.prefix}.shaded.com.qcloud</shadedPattern>
                                     <excludes>
                                         <!-- avoid relocate fs lock class cause network can not load real jar-->
-                                        <exclude>com.qcloud.chdfs.*</exclude>
+                                        <exclude>com.qcloud.chdfs.**</exclude>
                                     </excludes>
                                 </relocation>
                                 <relocation>

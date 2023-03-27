@@ -17,7 +17,7 @@
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
-        <shading.prefix>org.apache.flink.fs.shaded.hadoop</shading.prefix>
+        <shading.prefix>org.apache.flink.fs.shaded.hadoop3</shading.prefix>
         <maven.deploy.skip>true</maven.deploy.skip>
     </properties>
 

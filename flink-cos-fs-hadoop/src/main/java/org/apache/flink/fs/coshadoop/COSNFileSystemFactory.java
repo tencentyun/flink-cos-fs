@@ -43,12 +43,15 @@ public class COSNFileSystemFactory extends AbstractCOSFileSystemFactory {
 
     private static final String FLINK_SHADING_PREFIX = "org.apache.flink.fs.shaded.hadoop3.";
 
+    private static final Set<String> FLINK_TARGET_HADOOP_SHADE_PREFIX =
+            Collections.singleton("org.apache.hadoop.fs");
+
     /**
      * In order to simplify, we make flink cos configuration keys same with hadoop cos module. So,
      * we add all configuration key with prefix `fs.cosn` in flink conf to hadoop conf
      */
     private static final String[] FLINK_CONFIG_PREFIXES = {
-        "fs.cosn.", "fs.AbstractFileSystem.cosn."
+        "fs.cosn.", "fs.AbstractFileSystem.cosn.", "qcloud.object.storage."
     };
 
     public COSNFileSystemFactory() {
@@ -88,22 +91,52 @@ public class COSNFileSystemFactory extends AbstractCOSFileSystemFactory {
         this.flinkConfig = config;
     }
 
+    private static String convertStringToHex(String str) {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        char[] charArray = str.toCharArray();
+
+        for (char c : charArray) {
+            String charToHex = Integer.toHexString(c);
+            stringBuilder.append(charToHex);
+        }
+        return stringBuilder.toString();
+    }
+
     @Override
     protected org.apache.hadoop.conf.Configuration getHadoopConfiguration() {
         org.apache.hadoop.conf.Configuration conf = new org.apache.hadoop.conf.Configuration();
         if (flinkConfig == null) {
             return conf;
         }
+        Boolean useFlinkShade = true;
+        // if shade org.apache.hadoop targetPrefix may be changed with shade prefix.
+        String targetPrefix = "org.apache.hadoop.fs";
 
         // read all configuration with prefix 'FLINK_CONFIG_PREFIXES'
         for (String key : flinkConfig.keySet()) {
             for (String prefix : FLINK_CONFIG_PREFIXES) {
                 if (key.startsWith(prefix)) {
                     String value = flinkConfig.getString(key, null);
+                    LOG.info("cos factory set hadoop config key {}, value {}", key, value);
                     conf.set(key, value);
-                    if (CONFIG_KEYS_TO_SHADE.contains(key)) {
-                        if (value.startsWith("org.apache.hadoop.fs")) {
-                            conf.set(key, FLINK_SHADING_PREFIX + value);
+                    if (CONFIG_KEYS_TO_SHADE.contains(key) && useFlinkShade) { // provider
+                        // because of pkg already shaded the collection of "org.apache.hadoop.fs"
+                        // all of this prefix string are shade into flink-shade.org.apache.hadoop.fs
+                        // so the startsWith must compare with flink-shade prefix
+                        String compareKey = FLINK_SHADING_PREFIX + value;
+                        if (compareKey.startsWith(targetPrefix)) {
+                            LOG.info("cos factory set shade config key {}, value {}, " +
+                                            "prefix [{}], prefix hex [{}], value hex [{}]",
+                                    key, compareKey, targetPrefix,
+                                    convertStringToHex(targetPrefix),
+                                    convertStringToHex(compareKey));
+                            conf.set(key, compareKey);
+                        } else {
+                            LOG.info("not start with org.apache prefix [{}], " +
+                                            "prefix hex [{}], value hex [{}]",
+                                    targetPrefix, convertStringToHex(targetPrefix),
+                                    convertStringToHex(compareKey));
                         }
                     }
                     LOG.debug(

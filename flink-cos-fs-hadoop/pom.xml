@@ -61,18 +61,31 @@
                                 <!-- TODO: merge bucket network load org.apache.hadoop.* relate class,
                                 if shaded relate class will cause the ClassNotFound, but if not shaded
                                 must keep not conflict with local hadoop version.
-                                may be have some better way!? -->
-<!--
+                                if shade org.apache.hadoop and need use ranger client must set:
+                                fs.cosn.ranger.plugin.client.impl: org.apache.flink.fs.shaded.hadoop3.org.apache.hadoop.
+                                fs.cosn.ranger.client.RangerQcloudObjectStorageClientImpl
+
+                                todo: there may be a better way to solve this problem such like control the ofs java sdk
+                                load way, to direct load shade plugins so that can always shade it.
+                                if you need shade hadoop and use ranger at same time, it seems not work for now.
+                                 -->
                                 <relocation>
                                     <pattern>org.apache.hadoop</pattern>
                                     <shadedPattern>${hadoop.shading.prefix}.org.apache.hadoop</shadedPattern>
+                                    <excludes>
+                                        <!-- avoid relocate fs lock class cause network can not load real jar-->
+                                        <exclude>org.apache.hadoop.ipc.**</exclude>
+                                        <exclude>org.apache.hadoop.fs.cosn.ranger.protocol.**</exclude>
+                                    </excludes>
                                 </relocation>
--->
-                                <!-- used by ranger to load provider class, which must test for other provider -->
+
+                                <!-- used by ranger to load provider class, which must test for other provider-->
+                                <!--
                                 <relocation>
                                     <pattern>org.apache.hadoop.fs.auth</pattern>
                                     <shadedPattern>${hadoop.shading.prefix}.org.apache.hadoop.fs.auth</shadedPattern>
                                 </relocation>
+                                -->
 
                                 <relocation>
                                     <pattern>org.apache.commons</pattern>

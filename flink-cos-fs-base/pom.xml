@@ -27,11 +27,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-        </dependency>
-
-        <dependency>
             <groupId>org.apache.flink</groupId>
             <artifactId>flink-core</artifactId>
             <version>${flink.version}</version>
@@ -48,6 +43,11 @@
                     <artifactId>flink-core</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
         </dependency>
 
         <!-- Hadoop's file system abstraction (bundled) -->
@@ -87,6 +87,18 @@
                     <artifactId>hadoop-common</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>com.qcloud</groupId>
+            <artifactId>cosn-ranger-interface</artifactId>
+            <version>1.0.4</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.qcloud</groupId>
+            <artifactId>hadoop-ranger-client-for-hadoop</artifactId>
+            <version>3.1.0-4.1</version>
         </dependency>
 
         <!--Hadoop's COS support package-->

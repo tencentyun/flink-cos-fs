@@ -11,6 +11,13 @@
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
 
+# generate target
+flink-cos-fs-base/target
+flink-cos-fs-examples/target
+flink-cos-fs-hadoop/target
+flink-fs-hadoop-shaded/target
+target
+
 # Package Files #
 *.jar
 *.war
@@ -28,6 +35,7 @@ hs_err_pid*
 # Reference: https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
 
 # User-specific stuff
+.idea
 .idea/**/workspace.xml
 .idea/**/tasks.xml
 .idea/**/usage.statistics.xml

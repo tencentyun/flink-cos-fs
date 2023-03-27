@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="flink-cos-fs-hadoop" />
+        <module name="flink-fs-hadoop-shaded" />
+        <module name="flink-cos-fs-base" />
+        <module name="flink-cos-fs-examples" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="flink-cos-fs" target="11" />
+      <module name="flink-cos-fs-base" target="11" />
+      <module name="flink-cos-fs-examples" target="11" />
+      <module name="flink-cos-fs-hadoop" target="11" />
+      <module name="flink-fs-hadoop-shaded" target="11" />
+    </bytecodeTargetLevel>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="flink-cos-fs" options="-Xpkginfo:always --add-exports=java.base/sun.net.util=ALL-UNNAMED --add-exports=java.management/sun.management=ALL-UNNAMED" />
+      <module name="flink-cos-fs-base" options="-Xpkginfo:always --add-exports=java.base/sun.net.util=ALL-UNNAMED --add-exports=java.management/sun.management=ALL-UNNAMED" />
+      <module name="flink-cos-fs-examples" options="-Xpkginfo:always --add-exports=java.base/sun.net.util=ALL-UNNAMED --add-exports=java.management/sun.management=ALL-UNNAMED" />
+      <module name="flink-cos-fs-hadoop" options="-Xpkginfo:always --add-exports=java.base/sun.net.util=ALL-UNNAMED --add-exports=java.management/sun.management=ALL-UNNAMED" />
+      <module name="flink-fs-hadoop-shaded" options="-Xpkginfo:always --add-exports=java.base/sun.net.util=ALL-UNNAMED --add-exports=java.management/sun.management=ALL-UNNAMED" />
+    </option>
+  </component>
+</project>

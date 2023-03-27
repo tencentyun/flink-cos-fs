@@ -165,3 +165,10 @@ StreamingFileSink<String> fileSink  =  StreamingFileSink.forRowFormat(
 - Flink 既可以通过[hadoop-cos](https://github.com/tencentyun/hadoop-cos)读写 COS 中的对象文件，也可以通过 flink-cos-fs 来读写，这两种有什么区别？
 
 hadoop-cos 实现了 Hadoop 的兼容文件系统语义，Flink 可以通过写 Hadoop 兼容文件系统的形式写入数据到 COS 中，但是这种方式不支持的 Flink 的 recoverable writer 写入，当你使用 streamingFileSink 写入数据时，要求底层文件系统支持recoverable writer。 因此，flink-cos-fs 基于 Hadoop-COS (CosN) 扩展实现了 Flink 的recoverable writer，完整地支持了 Flink 文件系统的语义，因此推荐使用它来访问 COS 对象。
+
+
+## 编译
+目前由于元数据加速桶静态包使用loadjar方式，如何shade了org.apache.hadoop 会导致network和loadjar的pkg路径不同
+1）解决方式通过COSNFileSystemFactory的useFlinkShade开启，pom.xml of flink-cos-fs-hadoop开启shade
+2）或者关闭useFlinkShade，去掉shade
+3）todo： 完善ofs sdk flink或其他框架可以指定shade加载不同动态包实现all shade模式

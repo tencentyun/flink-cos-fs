@@ -33,6 +33,10 @@
             <name>iainyu</name>
             <email>iainyu@tencent.com</email>
         </developer>
+        <developer>
+            <name>alantong</name>
+            <email>alantong@tencent.com</email>
+        </developer>
     </developers>
 
     <scm>

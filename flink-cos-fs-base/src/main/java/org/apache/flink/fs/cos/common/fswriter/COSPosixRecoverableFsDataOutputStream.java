@@ -15,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.apache.flink.fs.cos.common.fswriter;
 
 import org.apache.flink.annotation.Internal;
@@ -167,7 +168,7 @@ class COSPosixRecoverableFsDataOutputStream extends RecoverableFsDataOutputStrea
         // if fd or session not close when occur something interrupt,
         // the truncate will try to open fd again which may occur the 'can not open fd again'
         // so every time begin call the truncate, manual to unlock the fd.
-        ((CosFileSystem)fileSystem).releaseFileLock(path);
+        ((CosFileSystem) fileSystem).releaseFileLock(path);
 
         // truncate back and append
         boolean truncated;

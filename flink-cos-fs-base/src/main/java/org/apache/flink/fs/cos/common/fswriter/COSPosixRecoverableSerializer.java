@@ -20,8 +20,8 @@ package org.apache.flink.fs.cos.common.fswriter;
 
 import org.apache.flink.annotation.Internal;
 import org.apache.flink.core.io.SimpleVersionedSerializer;
-import org.apache.hadoop.fs.Path;
 
+import org.apache.hadoop.fs.Path;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -106,11 +106,11 @@ public abstract class AbstractCOSFileSystemFactory implements FileSystemFactory 
             final int maxConcurrentUploads = flinkConfig.getInteger(MAX_CONCURRENT_UPLOADS);
             final long timeoutSec = flinkConfig.getLong(RECOVER_WAIT_TIMESEC);
             final COSAccessHelper cosAccessHelper =
-                    getCosAccessHelper(((CosFileSystem)fs).getStore());
+                    getCosAccessHelper(((CosFileSystem) fs).getStore());
 
             // after hadoop cos fix the setting change to get flag from the cos access helper, avoid head bucket twice.
             // boolean isPosixBucket = cosAccessHelper.isPosixBucket();
-            boolean isPosixBucket = ((CosFileSystem)fs).getStore().headBucket(bucket).isMergeBucket();
+            boolean isPosixBucket = ((CosFileSystem) fs).getStore().headBucket(bucket).isMergeBucket();
             boolean isPosixProcess = false;
 
             // according to the head bucket result and implement config to judge which writer to use.

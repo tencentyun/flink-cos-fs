@@ -73,9 +73,8 @@
                                     <pattern>org.apache.hadoop</pattern>
                                     <shadedPattern>${hadoop.shading.prefix}.org.apache.hadoop</shadedPattern>
                                     <excludes>
-                                        <!-- avoid relocate fs lock class cause network can not load real jar-->
-                                        <exclude>org.apache.hadoop.ipc.**</exclude>
-                                        <exclude>org.apache.hadoop.fs.cosn.ranger.protocol.**</exclude>
+                                        <exclude>org.apache.hadoop.fs.cosn.ranger.protocol.*</exclude>
+                                        <exclude>org/apache/flink/fs/coshadoop/Constants.class</exclude>
                                     </excludes>
                                 </relocation>
 

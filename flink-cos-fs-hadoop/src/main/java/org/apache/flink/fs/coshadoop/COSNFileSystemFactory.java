@@ -109,40 +109,18 @@ public class COSNFileSystemFactory extends AbstractCOSFileSystemFactory {
         if (flinkConfig == null) {
             return conf;
         }
-        Boolean useFlinkShade = true;
-        // if shade org.apache.hadoop targetPrefix may be changed with shade prefix.
-        String targetPrefix = "org.apache.hadoop.fs";
 
         // read all configuration with prefix 'FLINK_CONFIG_PREFIXES'
         for (String key : flinkConfig.keySet()) {
             for (String prefix : FLINK_CONFIG_PREFIXES) {
                 if (key.startsWith(prefix)) {
                     String value = flinkConfig.getString(key, null);
-                    LOG.info("cos factory set hadoop config key {}, value {}", key, value);
                     conf.set(key, value);
-                    if (CONFIG_KEYS_TO_SHADE.contains(key) && useFlinkShade) { // provider
-                        // because of pkg already shaded the collection of "org.apache.hadoop.fs"
-                        // all of this prefix string are shade into flink-shade.org.apache.hadoop.fs
-                        // so the startsWith must compare with flink-shade prefix
-                        String compareKey = FLINK_SHADING_PREFIX + value;
-                        if (compareKey.startsWith(targetPrefix)) {
-                            LOG.info("cos factory set shade config key {}, value {}, " +
-                                            "prefix [{}], prefix hex [{}], value hex [{}]",
-                                    key, compareKey, targetPrefix,
-                                    convertStringToHex(targetPrefix),
-                                    convertStringToHex(compareKey));
-                            conf.set(key, compareKey);
-                        } else {
-                            LOG.info("not start with org.apache prefix [{}], " +
-                                            "prefix hex [{}], value hex [{}]",
-                                    targetPrefix, convertStringToHex(targetPrefix),
-                                    convertStringToHex(compareKey));
-                        }
+                    if (value.startsWith(Constants.SHADING_VALUE_PREFIX)) {
+                        String shadeValue = FLINK_SHADING_PREFIX + value;
+                        conf.set(key, shadeValue);
                     }
-                    LOG.debug(
-                            "Adding Flink config entry for {} as {} to Hadoop config",
-                            key,
-                            conf.get(key));
+                    LOG.info("Adding Flink config entry for {} as {} to Hadoop config", key, conf.get(key));
                 }
             }
         }

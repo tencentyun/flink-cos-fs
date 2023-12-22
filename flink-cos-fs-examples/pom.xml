@@ -5,7 +5,7 @@
     <parent>
         <artifactId>flink-cos-fs</artifactId>
         <groupId>com.qcloud.cos</groupId>
-        <version>1.10.0-0.1.10</version>
+        <version>1.10.0-0.2.2</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 

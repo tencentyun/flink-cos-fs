@@ -86,7 +86,11 @@ fs.cosn.bucket.endpoint_suffix: cos.ap-guangzhou.myqcloud.com
 4.在作业的 write 或 sink 路径中填写格式为：```cosn://bucket-appid/path```的路径信息即可，例如：
 
 ```java
-        ...
+        StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+        // 采用 Streaming File Sink 写入的话，必须启用 checkpoint，这里使用 COS 作为 StateBackend 举例子，也可以使用其他 checkpoint storage。
+        env.setStateBackend(new FsStateBackend("cosn://bucket-name-125xxxxxx/checkpoint"));
+        env.enableCheckpointing(1000);
+        // 构造 Streaming File Sink 写入
         StreamingFileSink<String> streamingFileSink =
         StreamingFileSink.forRowFormat(
         new Path(outputPath), new SimpleStringEncoder<String>("UTF-8"))
@@ -99,6 +103,8 @@ fs.cosn.bucket.endpoint_suffix: cos.ap-guangzhou.myqcloud.com
         .build();
         ...
 ```
+
+⚠️**注意**：如果使用 Streaming File Sink 方式写入，需要同时启用 Flink 的 checkpoint，否则写入的数据始终处于 inprogress 不可见状态，无法被读取。
 
 ### 使用示例
 

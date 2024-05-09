@@ -120,7 +120,9 @@ public class COSNFileSystemFactory extends AbstractCOSFileSystemFactory {
                         String shadeValue = FLINK_SHADING_PREFIX + value;
                         conf.set(key, shadeValue);
                     }
-                    LOG.info("Adding Flink config entry for {} as {} to Hadoop config", key, conf.get(key));
+                    if (!key.startsWith("fs.cosn.userinfo")) {
+                        LOG.info("Adding Flink config entry for {} as {} to Hadoop config", key, conf.get(key));
+                    }
                 }
             }
         }

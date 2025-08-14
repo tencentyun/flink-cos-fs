@@ -34,6 +34,12 @@
             <artifactId>flink-cos-fs-base</artifactId>
             <version>${project.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.qcloud</groupId>
+            <artifactId>cosn-ranger-interface</artifactId>
+            <version>1.0.5</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -96,14 +102,6 @@
                                 </relocation>
 
                                 <relocation>
-                                    <pattern>com.qcloud</pattern>
-                                    <shadedPattern>${cos.shading.prefix}.shaded.com.qcloud</shadedPattern>
-                                    <excludes>
-                                        <!-- avoid relocate fs lock class cause network can not load real jar-->
-                                        <exclude>com.qcloud.chdfs.**</exclude>
-                                    </excludes>
-                                </relocation>
-                                <relocation>
                                     <pattern>org.apache.flink.runtime.fs.hdfs</pattern>
                                     <shadedPattern>${cos.shading.prefix}.common</shadedPattern>
                                 </relocation>
@@ -113,6 +111,22 @@
                                     <shadedPattern>${cos.shading.prefix}.common</shadedPattern>
                                 </relocation>
                             </relocations>
+
+                            <!-- ofs java sdk remove, here keep same -->
+                            <filters>
+                                <filter>
+                                    <artifact>*:*</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/*.DSA</exclude>
+                                        <exclude>META-INF/*.RSA</exclude>
+                                        <exclude>META-INF/*.SF</exclude>
+                                        <exclude>META-INF/native/libnetty*.so</exclude>
+                                        <exclude>META-INF/native/libnetty*.jnilib</exclude>
+                                        <exclude>META-INF/native/netty*.dll</exclude>
+                                        <exclude>*.proto</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
                         </configuration>
                     </execution>
                 </executions>

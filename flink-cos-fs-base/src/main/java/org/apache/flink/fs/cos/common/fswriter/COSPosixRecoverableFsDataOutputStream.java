@@ -26,11 +26,11 @@ import org.apache.flink.util.ExceptionUtils;
 import org.apache.flink.util.FlinkRuntimeException;
 import org.apache.flink.util.IOUtils;
 
-import org.apache.hadoop.fs.CosFileSystem;
 import org.apache.hadoop.fs.FSDataOutputStream;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
+import com.qcloud.chdfs.fs.CHDFSHadoopFileSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -168,7 +168,8 @@ class COSPosixRecoverableFsDataOutputStream extends RecoverableFsDataOutputStrea
         // if fd or session not close when occur something interrupt,
         // the truncate will try to open fd again which may occur the 'can not open fd again'
         // so every time begin call the truncate, manual to unlock the fd.
-        ((CosFileSystem) fileSystem).releaseFileLock(path);
+        //((CosFileSystem) fileSystem).releaseFileLock(path);
+        ((CHDFSHadoopFileSystem) fileSystem).releaseFileLock(path);
 
         // truncate back and append
         boolean truncated;

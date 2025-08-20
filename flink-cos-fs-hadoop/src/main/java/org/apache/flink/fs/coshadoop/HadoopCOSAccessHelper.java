@@ -112,4 +112,9 @@ public class HadoopCOSAccessHelper implements COSAccessHelper {
     public boolean isPosixBucket() {
         return this.store.isPosixBucket();
     }
+
+    @Override
+    public void close() {
+        this.store.close();
+    }
 }

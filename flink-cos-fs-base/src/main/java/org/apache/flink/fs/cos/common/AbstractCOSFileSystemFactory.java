@@ -27,8 +27,8 @@ import org.apache.flink.core.fs.FileSystemFactory;
 import org.apache.flink.fs.cos.common.writer.COSAccessHelper;
 import org.apache.flink.util.Preconditions;
 
-import org.apache.hadoop.fs.CosFileSystem;
 import org.apache.hadoop.fs.CosNConfigKeys;
+import org.apache.hadoop.fs.CosNUtils;
 import org.apache.hadoop.fs.NativeFileSystemStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -91,47 +91,33 @@ public abstract class AbstractCOSFileSystemFactory implements FileSystemFactory 
 
         LOG.info("Creating the COS FileSystem backed by {}.", this.name);
         try {
-            org.apache.hadoop.conf.Configuration hadoopConfiguration =
-                    this.getHadoopConfiguration();
-            org.apache.hadoop.fs.FileSystem fs = createHadoopFileSystem();
+            org.apache.hadoop.conf.Configuration hadoopConfiguration = this.getHadoopConfiguration();
             URI uri = getInitURI(fsUri, hadoopConfiguration);
             String bucket = uri.getHost();
-            fs.initialize(uri, hadoopConfiguration);
+            // init ranger client inside the native store, avoid file system init here not tell class, may lead twice head bucket
+            NativeFileSystemStore nativeStore = CosNUtils.createDefaultStore(hadoopConfiguration);
+            nativeStore.initialize(uri, hadoopConfiguration);
+            boolean isPosixBucket = nativeStore.headBucket(bucket).isMergeBucket();
 
-            final String[] localTempDirectories =
-                    ConfigurationUtils.parseTempDirectories(flinkConfiguration);
+            final String[] localTempDirectories = ConfigurationUtils.parseTempDirectories(flinkConfiguration);
             Preconditions.checkArgument(localTempDirectories.length > 0);
             final String localTempDirectory = localTempDirectories[0];
             final long cosMinPartSize = flinkConfig.getLong(UPLOAD_PART_MIN_SIZE);
             final int maxConcurrentUploads = flinkConfig.getInteger(MAX_CONCURRENT_UPLOADS);
             final long timeoutSec = flinkConfig.getLong(RECOVER_WAIT_TIMESEC);
-            final COSAccessHelper cosAccessHelper =
-                    getCosAccessHelper(((CosFileSystem) fs).getStore());
-
-            // after hadoop cos fix the setting change to get flag from the cos access helper, avoid head bucket twice.
-            // boolean isPosixBucket = cosAccessHelper.isPosixBucket();
-            boolean isPosixBucket = ((CosFileSystem) fs).getStore().headBucket(bucket).isMergeBucket();
-            boolean isPosixProcess = false;
 
             // according to the head bucket result and implement config to judge which writer to use.
-            String bucketImpl = "";
-            if (isPosixBucket) {
-                bucketImpl = hadoopConfiguration.get(CosNConfigKeys.COSN_POSIX_BUCKET_FS_IMPL);
-                if (null != bucketImpl) {
-                    if (bucketImpl.equals(CosNConfigKeys.DEFAULT_COSN_POSIX_BUCKET_FS_IMPL)) {
-                        isPosixProcess = true;
-                    }
-                } else {
-                    // default use the posix way to query posix bucket;
-                    isPosixProcess = true;
-                }
-            }
-
+            String bucketImpl = hadoopConfiguration.get(CosNConfigKeys.COSN_POSIX_BUCKET_FS_IMPL);
+            // default to use the posix way to query posix bucket;
+            boolean isPosixProcess = isPosixBucket && (bucketImpl == null || bucketImpl.equals(CosNConfigKeys.DEFAULT_COSN_POSIX_BUCKET_FS_IMPL));
             LOG.info("Creating the Flink cos file system, " +
                     "create posix process recover writer: {}, " +
                             "bucket {} is posix bucket: {}, bucket impl {}.",
                     isPosixProcess, bucket, isPosixBucket, bucketImpl);
+            org.apache.hadoop.fs.FileSystem fs = createHadoopFileSystem(isPosixProcess, nativeStore);
+            fs.initialize(uri, hadoopConfiguration);
 
+            final COSAccessHelper cosAccessHelper = getCosAccessHelper(nativeStore);
             return new FlinkCOSFileSystem(
                     fs,
                     localTempDirectory,
@@ -147,7 +133,7 @@ public abstract class AbstractCOSFileSystemFactory implements FileSystemFactory 
         }
     }
 
-    protected abstract org.apache.hadoop.fs.FileSystem createHadoopFileSystem();
+    protected abstract org.apache.hadoop.fs.FileSystem createHadoopFileSystem(boolean isPosixProcess, NativeFileSystemStore nativeStore);
 
     protected abstract URI getInitURI(URI fsUri, org.apache.hadoop.conf.Configuration hadoopConfig);
 

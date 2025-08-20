@@ -75,4 +75,6 @@ public interface COSAccessHelper {
     FileMetadata getObjectMetadata(String key) throws IOException;
 
     boolean isPosixBucket();
+
+    void close();
 }

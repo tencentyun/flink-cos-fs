@@ -22,7 +22,8 @@ import org.apache.flink.core.fs.RecoverableFsDataOutputStream;
 import org.apache.flink.fs.cos.common.utils.RefCountedFSOutputStream;
 
 import com.qcloud.cos.model.PartETag;
-import com.qcloud.cos.thirdparty.org.apache.commons.codec.digest.DigestUtils;
+//import com.qcloud.cos.thirdparty.org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.codec.digest.DigestUtils;
 
 import javax.annotation.Nullable;
 

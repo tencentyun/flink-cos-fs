@@ -22,6 +22,7 @@ import org.apache.flink.configuration.Configuration;
 import org.apache.flink.fs.cos.common.AbstractCOSFileSystemFactory;
 import org.apache.flink.fs.cos.common.writer.COSAccessHelper;
 
+import com.qcloud.chdfs.fs.CHDFSHadoopFileSystem;
 import org.apache.hadoop.fs.CosFileSystem;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.NativeFileSystemStore;
@@ -51,7 +52,7 @@ public class COSNFileSystemFactory extends AbstractCOSFileSystemFactory {
      * we add all configuration key with prefix `fs.cosn` in flink conf to hadoop conf
      */
     private static final String[] FLINK_CONFIG_PREFIXES = {
-        "fs.cosn.", "fs.AbstractFileSystem.cosn.", "qcloud.object.storage."
+        "fs.cosn.", "fs.AbstractFileSystem.cosn.", "qcloud.object.", "fs.ofs.", "ofs."
     };
 
     public COSNFileSystemFactory() {
@@ -59,8 +60,11 @@ public class COSNFileSystemFactory extends AbstractCOSFileSystemFactory {
     }
 
     @Override
-    protected FileSystem createHadoopFileSystem() {
-        return new CosFileSystem();
+    protected FileSystem createHadoopFileSystem(boolean isPosixProcess, NativeFileSystemStore nativeStore) {
+        if (isPosixProcess) {
+           return new CHDFSHadoopFileSystem();
+        }
+        return new CosFileSystem(nativeStore);
     }
 
     @Override

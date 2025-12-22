@@ -13,7 +13,7 @@
 
     <groupId>com.qcloud.cos</groupId>
     <artifactId>flink-cos-fs</artifactId>
-    <version>1.10.0-0.2.3</version>
+    <version>1.10.0-0.2.5</version>
     <name>Flink : FileSystems : COS FS</name>
     <description>
         This project aims to provide COS's implementation of the Flink file system interface,

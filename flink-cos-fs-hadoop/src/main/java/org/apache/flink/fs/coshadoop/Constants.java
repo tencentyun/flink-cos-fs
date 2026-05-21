@@ -24,4 +24,6 @@ package org.apache.flink.fs.coshadoop;
 public final class Constants {
   public static final String SHADING_VALUE_PREFIX = (new StringBuilder())
       .append("org.").append("apache.").append("hadoop.").append("fs").toString();
+  public static final String FLINK_GOOSEFS_FS_SINK_ENABLED = "flink.file.goosefs.sink.enabled";
+
 }

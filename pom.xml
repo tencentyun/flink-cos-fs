@@ -8,12 +8,12 @@
     <parent>
         <artifactId>flink-filesystems</artifactId>
         <groupId>org.apache.flink</groupId>
-        <version>1.10.0</version>
+        <version>1.10.1</version>
     </parent>
 
     <groupId>com.qcloud.cos</groupId>
     <artifactId>flink-cos-fs</artifactId>
-    <version>1.10.0-0.2.5</version>
+    <version>1.10.0-0.2.6</version>
     <name>Flink : FileSystems : COS FS</name>
     <description>
         This project aims to provide COS's implementation of the Flink file system interface,
@@ -75,6 +75,7 @@
         <module>flink-cos-fs-hadoop</module>
         <module>flink-fs-hadoop-shaded</module>
         <module>flink-cos-fs-examples</module>
+        <module>../flink-goosefs-fs-base/flink-goosefs-base</module>
     </modules>
 
     <dependencies>

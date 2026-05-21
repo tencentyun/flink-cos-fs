@@ -23,12 +23,14 @@ import org.apache.flink.fs.cos.common.AbstractCOSFileSystemFactory;
 import org.apache.flink.fs.cos.common.writer.COSAccessHelper;
 
 import com.qcloud.chdfs.fs.CHDFSHadoopFileSystem;
+import org.apache.flink.fs.goosefs.filesystem.factory.CosnFileSystemFactory;
 import org.apache.hadoop.fs.CosFileSystem;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.NativeFileSystemStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.Collections;
 import java.util.Set;
@@ -36,6 +38,10 @@ import java.util.Set;
 /** The CosN FileSystem Factory. */
 public class COSNFileSystemFactory extends AbstractCOSFileSystemFactory {
     private static final Logger LOG = LoggerFactory.getLogger(COSNFileSystemFactory.class);
+
+    //goosefs的Factory
+    private Boolean isGooseFSEnable;
+    private CosnFileSystemFactory cosnFileSystemFactory;
 
     private Configuration flinkConfig;
 
@@ -52,11 +58,12 @@ public class COSNFileSystemFactory extends AbstractCOSFileSystemFactory {
      * we add all configuration key with prefix `fs.cosn` in flink conf to hadoop conf
      */
     private static final String[] FLINK_CONFIG_PREFIXES = {
-        "fs.cosn.", "fs.AbstractFileSystem.cosn.", "qcloud.object.", "fs.ofs.", "ofs."
+        "fs.cosn.", "fs.AbstractFileSystem.cosn.", "qcloud.object.", "fs.ofs.", "ofs.",  "goosefs"
     };
 
     public COSNFileSystemFactory() {
         super("COSN FileSystem");
+        cosnFileSystemFactory = new CosnFileSystemFactory();
     }
 
     @Override
@@ -91,8 +98,21 @@ public class COSNFileSystemFactory extends AbstractCOSFileSystemFactory {
 
     @Override
     public void configure(org.apache.flink.configuration.Configuration config) {
-        super.configure(config);
         this.flinkConfig = config;
+        super.configure(config);
+        isGooseFSEnable = config.getBoolean(Constants.FLINK_GOOSEFS_FS_SINK_ENABLED, false);
+        if (isGooseFSEnable) {
+            LOG.info("enable goosefs filesystem");
+            cosnFileSystemFactory.configure(config, getHadoopConfiguration());
+        }
+    }
+
+    @Override
+    public org.apache.flink.core.fs.FileSystem create(URI fsUri) throws IOException {
+        if (isGooseFSEnable) {
+            return cosnFileSystemFactory.create(fsUri);
+        }
+        return super.create(fsUri);
     }
 
     private static String convertStringToHex(String str) {
@@ -119,6 +139,7 @@ public class COSNFileSystemFactory extends AbstractCOSFileSystemFactory {
             for (String prefix : FLINK_CONFIG_PREFIXES) {
                 if (key.startsWith(prefix)) {
                     String value = flinkConfig.getString(key, null);
+                    LOG.info("Adding Flink config entry for {} as {} to Hadoop config", key, value);
                     conf.set(key, value);
                     if (value.startsWith(Constants.SHADING_VALUE_PREFIX)) {
                         String shadeValue = FLINK_SHADING_PREFIX + value;

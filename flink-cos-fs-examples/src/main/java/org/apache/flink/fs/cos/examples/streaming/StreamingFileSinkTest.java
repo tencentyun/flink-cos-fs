@@ -37,9 +37,9 @@ public class StreamingFileSinkTest {
                                 new Path(outputPath), new SimpleStringEncoder<String>("UTF-8"))
                         .withRollingPolicy(
                                 DefaultRollingPolicy.builder()
-                                        .withRolloverInterval(TimeUnit.SECONDS.toMillis(5))
-                                        .withInactivityInterval(TimeUnit.SECONDS.toMillis(5))
-                                        .withMaxPartSize(1024)
+                                        .withRolloverInterval(TimeUnit.SECONDS.toMillis(30000)) // 30秒
+                                        .withInactivityInterval(TimeUnit.SECONDS.toMillis(30000)) // 30秒
+                                        .withMaxPartSize(1024 * 1024) // 1MB
                                         .build())
                         .build();
         if (parameterTool.get("input") == null) {

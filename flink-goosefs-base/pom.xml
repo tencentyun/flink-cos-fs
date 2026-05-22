@@ -38,9 +38,34 @@
             <groupId>org.apache.flink</groupId>
             <artifactId>flink-hadoop-fs</artifactId>
             <version>${flink.version}</version>
-            <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.flink</groupId>
+                    <artifactId>flink-core</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+        </dependency>
+
+        <!-- Hadoop's file system abstraction (bundled) -->
+        <dependency>
+            <groupId>com.qcloud.cos</groupId>
+            <artifactId>flink-fs-hadoop-shaded</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <!-- The COS support dependencies -->
+        <dependency>
+            <groupId>com.qcloud</groupId>
+            <artifactId>cos_api</artifactId>
+            <version>${fs.cos.sdk.version}</version>
+        </dependency>
+
+        <!-- Used by merge bucket network to parse plugins response -->
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
@@ -48,66 +73,16 @@
         </dependency>
 
         <dependency>
-            <groupId>com.qcloud.cos</groupId>
-            <artifactId>goosefs-client</artifactId>
-            <version>${goosefs.version}</version>
+            <groupId>com.qcloud</groupId>
+            <artifactId>ofs-sdk-definition</artifactId>
+            <version>1.0.5</version>
         </dependency>
 
-<!--        <dependency>-->
-<!--            <groupId>org.apache.hadoop</groupId>-->
-<!--            <artifactId>hadoop-common</artifactId>-->
-<!--            <exclusions>-->
-<!--                <exclusion>-->
-<!--                    <groupId>org.slf4j</groupId>-->
-<!--                    <artifactId>slf4j-log4j12</artifactId>-->
-<!--                </exclusion>-->
-<!--                <exclusion>-->
-<!--                    <groupId>log4j</groupId>-->
-<!--                    <artifactId>log4j</artifactId>-->
-<!--                </exclusion>-->
-<!--            </exclusions>-->
-<!--            <version>${hadoop.version}</version>-->
-<!--        </dependency>-->
 
-        <dependency>
-            <groupId>com.qcloud.cos</groupId>
-            <artifactId>flink-fs-hadoop-shaded</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>27.0-jre</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>${slf4j.version}</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>com.qcloud.cos</groupId>
-            <artifactId>hadoop-cos</artifactId>
-            <version>${fs.hadoopshaded.version}-${fs.cosn.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.apache.hadoop</groupId>
-                    <artifactId>hadoop-common</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.qcloud</groupId>
-                    <artifactId>cos_api-bundle</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.qcloud</groupId>
-                    <artifactId>chdfs_hadoop_plugin_network</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
+        <!-- for now use the ofs java sdk which manually install local-->
+        <!-- if not use the shade pkg will lose CHDFSFileStatus.class which in ofs-sdk-definition -->
+        <!-- ofs java sdk need to remove the relocation of chdfs.${project.version}.com.qcloud which change the main class path with version number -->
+        <!-- mvn install:install-file -Dfile=/Users/alantong/IdeaProjects/ofs-java-sdk/script_conf/jar/chdfs_hadoop_plugin-1.4.jar -DgroupId=com.qcloud -DartifactId=hadoop-chdfs -Dversion=1.5.1.6 -Dpackaging=jar -->
         <dependency>
             <groupId>com.qcloud</groupId>
             <artifactId>hadoop-chdfs</artifactId>
@@ -138,22 +113,30 @@
             <version>3.1.0-4.1</version>
         </dependency>
 
+        <!--Hadoop's COS support package-->
         <dependency>
-            <groupId>com.qcloud</groupId>
-            <artifactId>cos_api</artifactId>
-            <version>${fs.cos.sdk.version}</version>
+            <groupId>com.qcloud.cos</groupId>
+            <artifactId>hadoop-cos</artifactId>
+            <version>${fs.hadoopshaded.version}-${fs.cosn.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.hadoop</groupId>
+                    <artifactId>hadoop-common</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.qcloud</groupId>
+                    <artifactId>cos_api-bundle</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.qcloud</groupId>
+                    <artifactId>chdfs_hadoop_plugin_network</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
-
         <dependency>
-            <groupId>com.qcloud</groupId>
-            <artifactId>ofs-sdk-definition</artifactId>
-            <version>1.0.5</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.qcloud</groupId>
-            <artifactId>cos_api-bundle</artifactId>
-            <version>${fs.cos.sdk.version}</version>
+            <groupId>com.qcloud.cos</groupId>
+            <artifactId>goosefs-client</artifactId>
+            <version>${goosefs.version}</version>
         </dependency>
 
     </dependencies>

@@ -96,6 +96,7 @@ public abstract class AbstractCOSFileSystemFactory implements FileSystemFactory 
             String bucket = uri.getHost();
             // init ranger client inside the native store, avoid file system init here not tell class, may lead twice head bucket
             NativeFileSystemStore nativeStore = CosNUtils.createDefaultStore(hadoopConfiguration);
+            LOG.warn("hadoopConfiguration classloader: {}", hadoopConfiguration.getClassLoader().toString());
             nativeStore.initialize(uri, hadoopConfiguration);
             boolean isPosixBucket = nativeStore.headBucket(bucket).isMergeBucket();
 

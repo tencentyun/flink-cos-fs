@@ -96,20 +96,24 @@ public class COSNFileSystemFactory extends AbstractCOSFileSystemFactory {
         return new HadoopCOSAccessHelper(nativeFileSystemStore);
     }
 
+    //重要关注:: 这里创建的对象都是通过AppPluginClassLoader加载的
     @Override
     public void configure(org.apache.flink.configuration.Configuration config) {
         this.flinkConfig = config;
         super.configure(config);
-        isGooseFSEnable = config.getBoolean(Constants.FLINK_GOOSEFS_FS_SINK_ENABLED, false);
+        isGooseFSEnable = Constants.DEFAULT_FS_COSN_IMPL_VALUE.equals(config.getString(Constants.FS_COSN_IMPL_KEY,""));
         if (isGooseFSEnable) {
             LOG.info("enable goosefs filesystem");
-            cosnFileSystemFactory.configure(config, getHadoopConfiguration());
+            cosnFileSystemFactory.configure(config);
+        } else {
+            LOG.info("enable cos filesystem");
         }
     }
 
     @Override
     public org.apache.flink.core.fs.FileSystem create(URI fsUri) throws IOException {
         if (isGooseFSEnable) {
+            cosnFileSystemFactory.setHadoopConfiguration(getHadoopConfiguration());
             return cosnFileSystemFactory.create(fsUri);
         }
         return super.create(fsUri);
@@ -139,15 +143,12 @@ public class COSNFileSystemFactory extends AbstractCOSFileSystemFactory {
             for (String prefix : FLINK_CONFIG_PREFIXES) {
                 if (key.startsWith(prefix)) {
                     String value = flinkConfig.getString(key, null);
-                    LOG.info("Adding Flink config entry for {} as {} to Hadoop config", key, value);
                     conf.set(key, value);
                     if (value.startsWith(Constants.SHADING_VALUE_PREFIX)) {
                         String shadeValue = FLINK_SHADING_PREFIX + value;
                         conf.set(key, shadeValue);
                     }
-                    if (!key.startsWith("fs.cosn.userinfo")) {
-                        LOG.info("Adding Flink config entry for {} as {} to Hadoop config", key, conf.get(key));
-                    }
+                    LOG.info("Adding Flink config entry for {} as {} to Hadoop config", key, conf.get(key));
                 }
             }
         }

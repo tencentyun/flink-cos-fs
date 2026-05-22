@@ -91,12 +91,13 @@ public abstract class AbstractGooseFSFileSystemFactory {
     String scheme = fsUri.getScheme();
     String bucket = fsUri.getHost();
 
-    checkArgument(!scheme.equals(getScheme()), "file system scheme must not match the factory scheme");
+    checkArgument(scheme.equals(getScheme()), "file system scheme must not match the factory scheme: " + fsUri);
 
     if (Objects.equals(getScheme(), "ofs")) {
       return true;
     } else if (Objects.equals(getScheme(), "cosn")) {
       NativeFileSystemStore nativeStore = CosNUtils.createDefaultStore(hadoopConfiguration);
+      LOG.warn("hadoopConfiguration classloader: {}", hadoopConfiguration.getClassLoader().toString());
       nativeStore.initialize(fsUri, hadoopConfiguration);
       boolean isPosixBucket = nativeStore.headBucket(bucket).isMergeBucket();
 
@@ -112,9 +113,11 @@ public abstract class AbstractGooseFSFileSystemFactory {
     }
   }
 
-
-  public void configure(Configuration config, org.apache.hadoop.conf.Configuration hadoopConfiguration) {
+  public void configure(Configuration config) {
     this.flinkConfiguration = config;
+  }
+
+  public void setHadoopConfiguration(org.apache.hadoop.conf.Configuration hadoopConfiguration) {
     this.hadoopConfiguration = hadoopConfiguration;
   }
 }

@@ -1,5 +1,6 @@
 package org.apache.flink.fs.goosefs.filesystem.writer.ufs;
 
+import com.qcloud.chdfs.fs.CHDFSHadoopFileSystem;
 import com.qcloud.cos.goosefs.hadoop.FlinkFileSinkGooseFSFileSystem;
 import org.apache.flink.core.fs.Path;
 import org.apache.flink.core.fs.RecoverableFsDataOutputStream;
@@ -7,8 +8,6 @@ import org.apache.flink.core.fs.RecoverableWriter;
 import org.apache.flink.core.io.SimpleVersionedSerializer;
 import org.apache.flink.fs.goosefs.util.HadoopUtil;
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.CosFileSystem;
-import org.apache.hadoop.fs.CosNFileSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,7 +20,7 @@ public class GooseFSUnderFSRecoverableWriter implements RecoverableWriter {
   private final com.qcloud.cos.goosefs.client.file.FileSystem gooseFSFileSystem;
   private final Configuration hadoopConfiguration;
 
-  private CosFileSystem underFileSystem;
+  private CHDFSHadoopFileSystem underFileSystem;
 
   public GooseFSUnderFSRecoverableWriter(FlinkFileSinkGooseFSFileSystem flinkFileSinkGooseFSFileSystem, com.qcloud.cos.goosefs.client.file.FileSystem gooseFSFileSystem, Configuration hadoopConfiguration) {
     LOG.debug("create the goosefs posix recoverable writer");
@@ -114,13 +113,13 @@ public class GooseFSUnderFSRecoverableWriter implements RecoverableWriter {
     this.underFileSystem = this.retrieveUnderFileSystem(path.toUri(), hadoopConfiguration);
   }
 
-  protected CosFileSystem retrieveUnderFileSystem(URI uri, Configuration conf) throws IOException {
+  protected CHDFSHadoopFileSystem retrieveUnderFileSystem(URI uri, Configuration conf) throws IOException {
     String scheme = uri.getScheme();
     String rawAuthority = uri.getRawAuthority();
     String rawPath = uri.getRawPath();
     URI newUri = URI.create(scheme + "://" + rawAuthority + "/" + rawPath);
     LOG.debug("cos uri: {}", newUri);
-    CosFileSystem fileSystem = new CosFileSystem();
+    CHDFSHadoopFileSystem fileSystem = new CHDFSHadoopFileSystem();
     fileSystem.initialize(newUri, conf);
     return fileSystem;
   }

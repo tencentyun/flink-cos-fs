@@ -1,5 +1,6 @@
 package org.apache.flink.fs.goosefs.filesystem.writer.ufs;
 
+import com.qcloud.chdfs.fs.CHDFSHadoopFileSystem;
 import org.apache.flink.core.fs.RecoverableFsDataOutputStream;
 import org.apache.flink.core.fs.RecoverableWriter;
 import org.apache.flink.util.ExceptionUtils;
@@ -47,7 +48,7 @@ public class GooseFSUnderFSRecoverableFsDataOutputStream extends RecoverableFsDa
 
   private final FlinkFileSinkGooseFSFileSystem flinkFileSinkGooseFSFileSystem;
 
-  private CosFileSystem underFileSystem;
+  private CHDFSHadoopFileSystem underFileSystem;
 
   private final Path targetFile;
 
@@ -55,7 +56,7 @@ public class GooseFSUnderFSRecoverableFsDataOutputStream extends RecoverableFsDa
 
   private final FSDataOutputStream out;
 
-  public GooseFSUnderFSRecoverableFsDataOutputStream(FlinkFileSinkGooseFSFileSystem flinkFileSinkGooseFSFileSystem, com.qcloud.cos.goosefs.client.file.FileSystem gooseFSFileSystem, CosFileSystem underFileSystem, Path targetFile, Path tempFile) throws IOException {
+  public GooseFSUnderFSRecoverableFsDataOutputStream(FlinkFileSinkGooseFSFileSystem flinkFileSinkGooseFSFileSystem, com.qcloud.cos.goosefs.client.file.FileSystem gooseFSFileSystem, CHDFSHadoopFileSystem underFileSystem, Path targetFile, Path tempFile) throws IOException {
     LOG.debug("cos merge recoverable fs data output stream " +
         "temp file recover way trigger, file: {}", tempFile.toString());
     this.flinkFileSinkGooseFSFileSystem = checkNotNull(flinkFileSinkGooseFSFileSystem);
@@ -68,7 +69,7 @@ public class GooseFSUnderFSRecoverableFsDataOutputStream extends RecoverableFsDa
     this.out = underFileSystem.create(currentTempFile);
   }
 
-  public GooseFSUnderFSRecoverableFsDataOutputStream(FlinkFileSinkGooseFSFileSystem flinkFileSinkGooseFSFileSystem, com.qcloud.cos.goosefs.client.file.FileSystem gooseFSFileSystem, CosFileSystem underFileSystem, GooseFSUnderFSRecoverable recoverable) throws IOException {
+  public GooseFSUnderFSRecoverableFsDataOutputStream(FlinkFileSinkGooseFSFileSystem flinkFileSinkGooseFSFileSystem, com.qcloud.cos.goosefs.client.file.FileSystem gooseFSFileSystem, CHDFSHadoopFileSystem underFileSystem, GooseFSUnderFSRecoverable recoverable) throws IOException {
     //goosefsBaseFileSystem， 仅用作特殊情况下的 LoadMetadata
     this.flinkFileSinkGooseFSFileSystem = checkNotNull(flinkFileSinkGooseFSFileSystem);
     this.gooseFSFileSystem = checkNotNull(gooseFSFileSystem);
@@ -150,7 +151,7 @@ public class GooseFSUnderFSRecoverableFsDataOutputStream extends RecoverableFsDa
   }
 
   private static void safelyTruncateFile(
-      final CosFileSystem fileSystem,
+      final CHDFSHadoopFileSystem fileSystem,
       final Path path,
       final GooseFSUnderFSRecoverable recoverable) throws IOException {
 
@@ -186,7 +187,7 @@ public class GooseFSUnderFSRecoverableFsDataOutputStream extends RecoverableFsDa
     truncateHandle = truncateMethod;
   }
 
-  private static boolean truncate(final CosFileSystem hadoopFs, final Path file, final long length) throws IOException {
+  private static boolean truncate(final CHDFSHadoopFileSystem hadoopFs, final Path file, final long length) throws IOException {
     if (truncateHandle != null) {
       try {
         return (Boolean) truncateHandle.invoke(hadoopFs, file, length);
@@ -209,10 +210,10 @@ public class GooseFSUnderFSRecoverableFsDataOutputStream extends RecoverableFsDa
     private final com.qcloud.cos.goosefs.client.file.FileSystem gooseFSFileSystem;
 
     private final FlinkFileSinkGooseFSFileSystem flinkFileSinkGooseFSFileSystem;
-    private CosFileSystem underFileSystem;
+    private CHDFSHadoopFileSystem underFileSystem;
     private final GooseFSUnderFSRecoverable recoverable;
 
-    GooseFSUnderFSCommitter(FlinkFileSinkGooseFSFileSystem flinkFileSinkGooseFSFileSystem, com.qcloud.cos.goosefs.client.file.FileSystem gooseFSFileSystem, CosFileSystem underFileSystem, GooseFSUnderFSRecoverable recoverable) {
+    GooseFSUnderFSCommitter(FlinkFileSinkGooseFSFileSystem flinkFileSinkGooseFSFileSystem, com.qcloud.cos.goosefs.client.file.FileSystem gooseFSFileSystem, CHDFSHadoopFileSystem underFileSystem, GooseFSUnderFSRecoverable recoverable) {
       //hcfs 语义的goosefs 文件系统，用作常规的文件创建
       //goosefsBaseFileSystem， 仅用作特殊情况下的 LoadMetadata
       ensureTruncateInitialized();

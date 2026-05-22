@@ -31,11 +31,7 @@ public class GooseFSUnderFSFileSystem extends HadoopFileSystem {
     this.hadoopConfiguration = checkNotNull(hadoopConfiguration);
     initGooseFSFileSystem();
 
-    if (fileSystem instanceof AbstractCompatibleFileSystem) {
-      this.flinkFileSinkGooseFSFileSystem = new FlinkFileSinkGooseFSFileSystem((AbstractCompatibleFileSystem) fileSystem);
-    } else {
-      throw new IOException(String.format("unsupported fileSystem [%s]", fileSystem));
-    }
+    this.flinkFileSinkGooseFSFileSystem = new FlinkFileSinkGooseFSFileSystem(fileSystem);
   }
 
   private void initGooseFSFileSystem() {

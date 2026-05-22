@@ -8,6 +8,9 @@ import org.apache.flink.fs.goosefs.constant.Constants;
 import org.apache.flink.fs.goosefs.constant.FileSystemType;
 import org.apache.flink.fs.goosefs.filesystem.writer.base.GooseFSBaseFileSystem;
 import org.apache.flink.fs.goosefs.filesystem.writer.ufs.GooseFSUnderFSFileSystem;
+import org.apache.hadoop.fs.CosNConfigKeys;
+import org.apache.hadoop.fs.CosNUtils;
+import org.apache.hadoop.fs.NativeFileSystemStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,6 +63,10 @@ public abstract class AbstractGooseFSFileSystemFactory {
         return new GooseFSBaseFileSystem(goosefs, hadoopConfiguration);
       } else if (Objects.equals(type, FileSystemType.UFS.name())) {
         LOG.info("Use goosefs under file system");
+        if (!isPosixBucket(fsUri)) {
+          // 必须是posix bucket
+          throw new IOException("Only support posix bucket, please check your bucket: " + fsUri);
+        }
         return new GooseFSUnderFSFileSystem(goosefs, hadoopConfiguration);
       } else {
         throw new IOException("Unsupported file system type: " + type);
@@ -80,39 +87,30 @@ public abstract class AbstractGooseFSFileSystemFactory {
 
   protected abstract String getScheme();
 
-//  private boolean isPosixBucket(URI fsUri) throws IOException {
-//    String scheme = fsUri.getScheme();
-//    String bucket = fsUri.getHost();
-//
-//    checkArgument(!scheme.equals(getScheme()), "file system scheme must not match the factory scheme");
-//
-//    if (Objects.equals(getScheme(), "ofs")) {
-//      return true;
-//    } else if (Objects.equals(getScheme(), "cosn")) {
-//      CosFileSystem cosFileSystem = new CosFileSystem();
-//      boolean isPosixBucket = cosFileSystem.getStore().headBucket(bucket).isMergeBucket();
-//      boolean isPosixProcess = false;
-//
-//      String bucketImpl = hadoopConfiguration.get(CosNConfigKeys.COSN_POSIX_BUCKET_FS_IMPL);
-//      if (isPosixBucket) {
-//        if (null != bucketImpl) {
-//          if (bucketImpl.equals(CosNConfigKeys.DEFAULT_COSN_POSIX_BUCKET_FS_IMPL)) {
-//            isPosixProcess = true;
-//          }
-//        } else {
-//          isPosixProcess = true;
-//        }
-//      }
-//      LOG.info("Creating the Flink cos file system, " +
-//              "create posix process recover writer: {}, " +
-//              "bucket {} is posix bucket: {}, bucket impl {}.",
-//          isPosixProcess, bucket, isPosixBucket, bucketImpl);
-//
-//      return isPosixProcess;
-//    } else {
-//      return false;
-//    }
-//  }
+  private boolean isPosixBucket(URI fsUri) throws IOException {
+    String scheme = fsUri.getScheme();
+    String bucket = fsUri.getHost();
+
+    checkArgument(!scheme.equals(getScheme()), "file system scheme must not match the factory scheme");
+
+    if (Objects.equals(getScheme(), "ofs")) {
+      return true;
+    } else if (Objects.equals(getScheme(), "cosn")) {
+      NativeFileSystemStore nativeStore = CosNUtils.createDefaultStore(hadoopConfiguration);
+      nativeStore.initialize(fsUri, hadoopConfiguration);
+      boolean isPosixBucket = nativeStore.headBucket(bucket).isMergeBucket();
+
+      String bucketImpl = hadoopConfiguration.get(CosNConfigKeys.COSN_POSIX_BUCKET_FS_IMPL);
+      boolean isPosixProcess = isPosixBucket && (bucketImpl == null || bucketImpl.equals(CosNConfigKeys.DEFAULT_COSN_POSIX_BUCKET_FS_IMPL));
+      LOG.info("Creating the Flink cos file system, " +
+              "create posix process recover writer: {}, " +
+              "bucket {} is posix bucket: {}, bucket impl {}.",
+          isPosixProcess, bucket, isPosixBucket, bucketImpl);
+      return isPosixProcess;
+    } else {
+      return false;
+    }
+  }
 
 
   public void configure(Configuration config, org.apache.hadoop.conf.Configuration hadoopConfiguration) {
